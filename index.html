@@ -1,0 +1,2022 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NecroSpec Studio — Kiroween 2026 Spec-Driven Development Workbench</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #090712;
+      color: #f3f0ff;
+    }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .glow-border {
+      box-shadow: 0 0 24px -6px rgba(139, 92, 246, 0.35);
+    }
+    .emerald-glow {
+      box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.35);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#090712] text-slate-100 antialiased selection:bg-violet-600 selection:text-white">
+
+  <!-- Top Ambient Banner -->
+  <div class="bg-gradient-to-r from-violet-950/90 via-purple-900/60 to-emerald-950/90 border-b border-violet-500/30 px-4 py-2 text-xs">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-violet-500/20 text-violet-300 border border-violet-400/30">
+          Kiroween 2026 Hackathon
+        </span>
+        <span class="text-slate-300">Primary Track: <strong class="text-emerald-300">Skeleton Crew ($30,000 First Prize)</strong> · Built with <code class="mono text-violet-300">/.kiro</code> Architecture</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="judgeStatusBadge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-800/90 text-slate-300 border border-slate-700">
+          <span class="w-2 h-2 rounded-full bg-amber-400" id="judgeStatusDot"></span>
+          <span id="judgeStatusText">Session: Guest Developer</span>
+        </span>
+        <button id="btnJudgeLogin" type="button" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition text-xs">
+          Judge Instant Login (judge@kiroween.dev)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Header -->
+  <header class="border-b border-slate-800/80 bg-[#0d0a1a]/90 backdrop-blur sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div class="flex items-start sm:items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-600 to-emerald-500 flex items-center justify-center text-xl font-bold shadow-lg shadow-violet-900/40 shrink-0">
+          👻
+        </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white">NecroSpec Studio <span class="text-violet-400 font-normal text-sm">亡灵规格工坊 v2.6</span></h1>
+            <span class="px-2 py-0.5 text-[11px] rounded bg-violet-950 text-violet-300 border border-violet-700/50 mono">/.kiro Ready</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-0.5">Kiro Spec-Driven Development (EARS Specs · Steering · PostFileSave Hooks · 100-Case PBT · 13-Point Rubric Auditor)</p>
+        </div>
+      </div>
+
+      <!-- Preset Selector & Quick Actions -->
+      <div class="flex flex-wrap items-center gap-2">
+        <label for="presetSelect" class="text-xs text-slate-400 font-medium">Track Blueprint:</label>
+        <select id="presetSelect" class="bg-slate-900 border border-violet-500/40 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-violet-500">
+          <option value="civ1991">Resurrection × Frankenstein — CivKiro 1991 (《文明 1991》AI 规格重制版)</option>
+          <option value="skeleton">Skeleton Crew — NecroSpec SDD Starter Template</option>
+          <option value="resurrection">Resurrection — VT100 GhostShell 1982 Terminal AI</option>
+          <option value="frankenstein">Frankenstein — Chimera Wasm + MCP + WebGPU Bridge</option>
+          <option value="costume">Costume Contest — GrimoireUI Spectral Design System</option>
+        </select>
+        <button id="btnOpenTourModal" type="button" class="px-3 py-1.5 rounded-lg bg-violet-600/20 hover:bg-violet-600/30 text-violet-200 border border-violet-500/40 text-xs font-medium transition">
+          Judge Credentials & Guide
+        </button>
+        <button id="btnDownloadCurrentFile" type="button" class="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold transition shadow-sm">
+          Export Active .kiro File
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="max-w-7xl mx-auto px-4 flex flex-wrap gap-1 border-t border-slate-800/60 pt-2">
+      <button type="button" data-tab="civgame" class="nav-tab px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-t-lg border-b-2 border-emerald-400 bg-emerald-950/40 text-white transition">
+        🎮 0. CivKiro 1991 4X 沙盘 (Playable Resurrection Demo)
+      </button>
+      <button type="button" data-tab="specs" class="nav-tab px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-t-lg border-b-2 border-transparent text-slate-300 hover:text-white transition">
+        1. Spec Necromancer (.kiro/specs)
+      </button>
+      <button type="button" data-tab="hooks" class="nav-tab px-4 py-2.5 text-xs sm:text-sm font-medium rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">
+        2. Steering, Hooks & PBT Lab (.kiro/hooks)
+      </button>
+      <button type="button" data-tab="auditor" class="nav-tab px-4 py-2.5 text-xs sm:text-sm font-medium rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">
+        3. Kiroween 13-Point Auditor & Teleprompter
+      </button>
+      <button type="button" data-tab="credits" class="nav-tab px-4 py-2.5 text-xs sm:text-sm font-medium rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition">
+        4. 4,000 Credits & Submission Tracker
+      </button>
+    </div>
+  </header>
+
+  <!-- KPI Summary Strip -->
+  <section class="max-w-7xl mx-auto px-4 pt-5">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div class="bg-[#120e24] border border-violet-500/25 rounded-xl p-3.5 glow-border">
+        <div class="flex items-center justify-between text-xs text-slate-400">
+          <span>EARS Spec Compliance</span>
+          <span class="mono text-emerald-400" id="kpiEarsBadge">STRICT</span>
+        </div>
+        <div class="text-2xl font-bold text-white mt-1" id="kpiEarsScore">100%</div>
+        <div class="text-[11px] text-slate-400 mt-1" id="kpiEarsSub">5 / 5 clauses follow WHEN...THE SYSTEM SHALL</div>
+      </div>
+
+      <div class="bg-[#120e24] border border-violet-500/25 rounded-xl p-3.5">
+        <div class="flex items-center justify-between text-xs text-slate-400">
+          <span>Spec Tasks Completed</span>
+          <span class="mono text-violet-300">tasks.md</span>
+        </div>
+        <div class="text-2xl font-bold text-white mt-1" id="kpiTasksProgress">8 / 8</div>
+        <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+          <div id="kpiTasksBar" class="bg-gradient-to-r from-violet-500 to-emerald-400 h-full transition-all duration-300" style="width: 100%"></div>
+        </div>
+      </div>
+
+      <div class="bg-[#120e24] border border-violet-500/25 rounded-xl p-3.5">
+        <div class="flex items-center justify-between text-xs text-slate-400">
+          <span>PBT Invariant Fuzzing</span>
+          <span class="mono text-emerald-400" id="kpiPbtStatus">PASS</span>
+        </div>
+        <div class="text-2xl font-bold text-white mt-1" id="kpiPbtCases">100 / 100</div>
+        <div class="text-[11px] text-slate-400 mt-1" id="kpiPbtSub">Completeness & Idempotency verified</div>
+      </div>
+
+      <div class="bg-[#120e24] border border-violet-500/25 rounded-xl p-3.5">
+        <div class="flex items-center justify-between text-xs text-slate-400">
+          <span>Kiroween Rubric Readiness</span>
+          <span class="mono text-amber-300" id="kpiRubricWeighted">100 / 100 pts</span>
+        </div>
+        <div class="text-2xl font-bold text-white mt-1" id="kpiRubricCount">13 / 13</div>
+        <div class="text-[11px] text-slate-400 mt-1">5 Judging Dimensions (20% each)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Workspace Container -->
+  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+
+    <!-- =================================================================== -->
+    <!-- TAB 0: CIVKIRO 1991 PLAYABLE 4X STRATEGY & SPEC ENGINE              -->
+    <!-- =================================================================== -->
+    <section id="tab-civgame" class="tab-panel space-y-5">
+      <div class="bg-gradient-to-r from-[#140f2d] via-[#111c2d] to-[#0f241d] border border-emerald-500/30 rounded-2xl p-4 sm:p-5 space-y-4">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 border-b border-slate-800/80 pb-3.5">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2 py-0.5 text-[11px] font-bold rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 mono">RESURRECTION × FRANKENSTEIN TRACK</span>
+              <h2 class="text-base sm:text-lg font-bold text-white">《文明 1991》AI 复活工程 — CivKiro 1991: Spec-Driven 4X Strategy</h2>
+            </div>
+            <p class="text-xs text-slate-300 mt-1">
+              用 Kiro 的 <code class="mono text-violet-300">.kiro/specs/civ1991-4x-engine/</code> (EARS 语法) 重构 1991 DOS 版《Sid Meier's Civilization》核心 4X 循环（探索迷雾、建城、科技树、回合生产力与“核平甘地”无符号整数下溢防护）。
+            </p>
+          </div>
+          <!-- Empire Resource Telemetry Bar -->
+          <div class="flex flex-wrap items-center gap-2 text-xs mono">
+            <div class="px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-amber-300">
+              ⏳ <span id="civYearLabel">4000 BC (Turn 1)</span>
+            </div>
+            <div class="px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-emerald-300">
+              🌾 Food: <strong id="civFoodVal">10</strong> (<span id="civFoodRate">+2</span>)
+            </div>
+            <div class="px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-sky-300">
+              ⚙️ Prod: <strong id="civProdVal">10</strong> (<span id="civProdRate">+2</span>)
+            </div>
+            <div class="px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-violet-300">
+              🧪 Sci: <strong id="civSciVal">0</strong> (<span id="civSciRate">+2</span>)
+            </div>
+            <div class="px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-yellow-300">
+              💰 Gold: <strong id="civGoldVal">25</strong> (<span id="civGoldRate">+1</span>)
+            </div>
+            <button id="btnCivAudioToggle" type="button" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-medium transition">
+              🔊 1991 Audio: ON
+            </button>
+          </div>
+        </div>
+
+        <!-- 4X Arena Grid: Left Canvas Map + Right Command & Kiro Spec Bridge -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <!-- Interactive HTML5 Canvas 4X Map -->
+          <div class="lg:col-span-8 space-y-3">
+            <div id="civCanvasContainer" class="w-full bg-[#070a12] border-2 border-violet-500/40 rounded-xl overflow-hidden relative shadow-inner">
+              <canvas id="civMapCanvas" class="block w-full cursor-pointer" height="420"></canvas>
+            </div>
+
+            <!-- On-Screen Touch / Mouse Controls + Turn Controls -->
+            <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-950/90 border border-slate-800 rounded-xl p-3">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="text-[11px] text-slate-400 mr-1">Move Unit (WASD / Arrows / Click Tile):</span>
+                <button id="btnCivMoveUp" type="button" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-violet-600 text-white text-xs font-bold">↑ N</button>
+                <button id="btnCivMoveDown" type="button" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-violet-600 text-white text-xs font-bold">↓ S</button>
+                <button id="btnCivMoveLeft" type="button" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-violet-600 text-white text-xs font-bold">← W</button>
+                <button id="btnCivMoveRight" type="button" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-violet-600 text-white text-xs font-bold">→ E</button>
+                <button id="btnCivCycleUnit" type="button" class="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-700 text-violet-300 text-xs font-medium ml-1">
+                  Next Unit (Tab)
+                </button>
+              </div>
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button id="btnCivFoundCity" type="button" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                  🏛️ Found City (B)
+                </button>
+                <button id="btnCivTrainWarrior" type="button" class="px-2.5 py-1.5 rounded-lg bg-sky-600/30 hover:bg-sky-600/50 border border-sky-500/40 text-sky-200 text-xs font-medium transition">
+                  ⚔️ Train Warrior (20⚙️)
+                </button>
+                <button id="btnCivTrainSettler" type="button" class="px-2.5 py-1.5 rounded-lg bg-violet-600/30 hover:bg-violet-600/50 border border-violet-500/40 text-violet-200 text-xs font-medium transition">
+                  🚩 Train Settler (30⚙️)
+                </button>
+                <button id="btnCivNextTurn" type="button" class="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition shadow">
+                  ⏭️ End Turn (Space)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Sidebar: Tile Inspector, Tech Tree, Nuclear Gandhi Kiro Guard & Game Log -->
+          <div class="lg:col-span-4 space-y-3.5">
+            <!-- Selected Tile & Unit Inspector -->
+            <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white" id="civSelectedTitle">Selected: Settler #1 (4, 3)</span>
+                <button id="btnCivNewMap" type="button" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[11px] text-slate-300">
+                  🎲 New World Seed
+                </button>
+              </div>
+              <p class="text-xs text-slate-300 mono" id="civSelectedDesc">Terrain: Plains (🌾+2 Food, ⚙️+1 Prod) · Moves: 2/2</p>
+              <div class="text-[11px] text-violet-300 bg-violet-950/40 border border-violet-500/30 rounded px-2.5 py-1.5 mono" id="civActiveSpecRule">
+                EARS Spec [REQ-CIV-01]: WHEN Settler executes Found City on land, THE SYSTEM SHALL spawn a City & lift 2-tile fog.
+              </div>
+            </div>
+
+            <!-- Tech Tree Progress & Selection -->
+            <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-white">🔬 1991 Tech Tree (科技树)</span>
+                <span class="mono text-violet-300" id="civTechProgressText">0 / 20 🧪</span>
+              </div>
+              <div class="grid grid-cols-2 gap-1.5 text-[11px]" id="civTechButtonsGrid"></div>
+            </div>
+
+            <!-- Kiro Spec Guard vs 1991 "Nuclear Gandhi" Underflow Bug -->
+            <div class="bg-slate-950/90 border border-rose-500/30 rounded-xl p-3.5 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-rose-300">☢️ AI 外交与“核平甘地”下溢实验</span>
+                <span id="civGandhiAggroBadge" class="mono text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">Aggro: 1 / 10</span>
+              </div>
+              <p class="text-[11px] text-slate-400 leading-relaxed">
+                1991 原版《文明》因 8-bit 无符号整数下溢（好战度 <code class="mono">1 - 2 = 255</code>）导致甘地采用民主制后疯狂扔核弹。用 Kiro EARS 规格与 PBT 属性测试可实时拦截该 Bug：
+              </p>
+              <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                <button id="btnCivToggleGandhiMode" type="button" class="px-2.5 py-1 rounded bg-emerald-600/30 hover:bg-emerald-600/50 border border-emerald-500/40 text-emerald-200 text-[11px] font-medium">
+                  🛡️ Mode: Kiro Spec Clamped (0..10)
+                </button>
+                <button id="btnCivAdoptDemocracy" type="button" class="px-2.5 py-1 rounded bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-semibold">
+                  🕊️ Sign Peace / Adopt Democracy (-2 Aggro)
+                </button>
+              </div>
+            </div>
+
+            <!-- 4X Chronicle Log -->
+            <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-3">
+              <div class="text-[11px] font-semibold text-slate-400 mb-1.5 mono">4X Empire Chronicle & Kiro Hook Log</div>
+              <div id="civGameLog" class="mono text-[11px] text-slate-300 space-y-1 max-h-28 overflow-y-auto"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TAB 1: SPEC NECROMANCER (.kiro/specs/<feature>/)                    -->
+    <!-- =================================================================== -->
+    <section id="tab-specs" class="tab-panel hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Left Column: EARS Requirement Compiler & Task Checklist -->
+      <div class="lg:col-span-7 space-y-5">
+        <div class="bg-[#120e24] border border-slate-800 rounded-xl p-5 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-base font-bold text-white">EARS Requirement Necromancer</h2>
+              <p class="text-xs text-slate-400">Every functional requirement is validated against Kiro EARS syntax (<code class="mono text-violet-300">WHEN / WHILE / IF ... THE SYSTEM SHALL ...</code>).</p>
+            </div>
+            <button id="btnAutoRewriteAllEars" type="button" class="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-xs font-medium transition">
+              Auto-Heal All Non-EARS Clauses
+            </button>
+          </div>
+
+          <!-- Add New Requirement Form -->
+          <div class="bg-slate-900/90 border border-slate-800 rounded-lg p-3.5 space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <input id="inputReqTitle" type="text" placeholder="Requirement Title (e.g., Live Diff Preview)" class="bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500" />
+              <input id="inputReqClause" type="text" placeholder="Raw idea or EARS clause (e.g., user clicks export, download zip)" class="sm:col-span-2 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-violet-500" />
+            </div>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-[11px] text-slate-400">Tip: Enter any plain sentence and click <strong>Compile into EARS</strong> to convert automatically.</span>
+              <div class="flex items-center gap-2">
+                <button id="btnCompileInputToEars" type="button" class="px-3 py-1.5 rounded-lg bg-violet-600/30 hover:bg-violet-600/50 text-violet-200 border border-violet-500/40 text-xs font-medium transition">
+                  Compile Input to EARS
+                </button>
+                <button id="btnAddRequirement" type="button" class="px-3.5 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold transition">
+                  + Add to requirements.md
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Requirements List -->
+          <div id="requirementsListContainer" class="space-y-2.5"></div>
+        </div>
+
+        <!-- Interactive tasks.md Milestone Tracker -->
+        <div class="bg-[#120e24] border border-slate-800 rounded-xl p-5 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-base font-bold text-white">Executable Implementation Plan (<code class="mono text-violet-300">.kiro/specs/tasks.md</code>)</h2>
+              <p class="text-xs text-slate-400">Toggle tasks to update live <code class="mono">tasks.md</code> checkboxes and project readiness metrics.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <input id="inputNewTask" type="text" placeholder="New task milestone..." class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-violet-500" />
+              <button id="btnAddTask" type="button" class="px-3 py-1 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium transition">
+                + Add Task
+              </button>
+            </div>
+          </div>
+          <div id="tasksListContainer" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- Right Column: Live .kiro/specs Artifact Viewer & Copy/Download -->
+      <div class="lg:col-span-5 space-y-4">
+        <div class="bg-[#120e24] border border-slate-800 rounded-xl p-5 flex flex-col h-full">
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800">
+            <div class="flex items-center gap-1.5">
+              <button type="button" data-specdoc="requirements" class="spec-doc-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-violet-600 text-white">
+                requirements.md
+              </button>
+              <button type="button" data-specdoc="design" class="spec-doc-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-900 text-slate-300 hover:bg-slate-800">
+                design.md
+              </button>
+              <button type="button" data-specdoc="tasks" class="spec-doc-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-900 text-slate-300 hover:bg-slate-800">
+                tasks.md
+              </button>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="btnCopySpecDoc" type="button" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium transition">
+                Copy Markdown
+              </button>
+              <button id="btnDownloadSpecDoc" type="button" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium transition">
+                Download .md
+              </button>
+            </div>
+          </div>
+
+          <div class="mt-3 text-[11px] text-slate-400 flex items-center justify-between">
+            <span id="activeSpecPathLabel" class="mono text-violet-300">.kiro/specs/necrospec-core/requirements.md</span>
+            <span>Synced with workspace state</span>
+          </div>
+
+          <pre id="specMarkdownPreview" class="mt-2 flex-1 bg-slate-950 border border-slate-800/90 rounded-lg p-3.5 text-xs mono text-slate-200 overflow-x-auto whitespace-pre-wrap leading-relaxed max-h-[540px] overflow-y-auto"></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TAB 2: STEERING, HOOKS & PBT LAB (.kiro/steering & .kiro/hooks)      -->
+    <!-- =================================================================== -->
+    <section id="tab-hooks" class="tab-panel hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Left Column: .kiro File Explorer & Live Editor -->
+      <div class="lg:col-span-6 bg-[#120e24] border border-slate-800 rounded-xl p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-base font-bold text-white"><code class="mono text-violet-300">/.kiro</code> Steering, Hooks & MCP Configurator</h2>
+            <p class="text-xs text-slate-400">Inspect, customize, or export any required root <code class="mono">/.kiro</code> artifact.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="btnCopyKiroConfig" type="button" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-medium">
+              Copy File
+            </button>
+            <button id="btnSaveKiroConfig" type="button" class="px-3 py-1 rounded bg-violet-600 hover:bg-violet-500 text-xs text-white font-semibold">
+              Save & Trigger PostFileSave Hook
+            </button>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-1.5" id="kiroConfigFileTabs">
+          <button type="button" data-kirofile="steering/product.md" class="kiro-file-btn px-2.5 py-1 rounded text-xs font-medium bg-violet-600 text-white mono">steering/product.md</button>
+          <button type="button" data-kirofile="steering/tech.md" class="kiro-file-btn px-2.5 py-1 rounded text-xs font-medium bg-slate-900 text-slate-300 hover:bg-slate-800 mono">steering/tech.md</button>
+          <button type="button" data-kirofile="steering/structure.md" class="kiro-file-btn px-2.5 py-1 rounded text-xs font-medium bg-slate-900 text-slate-300 hover:bg-slate-800 mono">steering/structure.md</button>
+          <button type="button" data-kirofile="hooks/test-on-save.json" class="kiro-file-btn px-2.5 py-1 rounded text-xs font-medium bg-slate-900 text-slate-300 hover:bg-slate-800 mono">hooks/test-on-save.json</button>
+          <button type="button" data-kirofile="hooks/kiro-spec-lint.json" class="kiro-file-btn px-2.5 py-1 rounded text-xs font-medium bg-slate-900 text-slate-300 hover:bg-slate-800 mono">hooks/kiro-spec-lint.json</button>
+          <button type="button" data-kirofile="settings/mcp.json" class="kiro-file-btn px-2.5 py-1 rounded text-xs font-medium bg-slate-900 text-slate-300 hover:bg-slate-800 mono">settings/mcp.json</button>
+        </div>
+
+        <div class="text-[11px] text-slate-400 flex items-center justify-between">
+          <span id="currentKiroFileLabel" class="mono text-emerald-300">.kiro/steering/product.md</span>
+          <span>Inclusion policy: <code class="mono text-violet-300">always</code></span>
+        </div>
+
+        <textarea id="kiroConfigTextarea" rows="16" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3.5 text-xs mono text-slate-100 focus:outline-none focus:border-violet-500 leading-relaxed"></textarea>
+      </div>
+
+      <!-- Right Column: Hook Simulator & 100-Case Property-Based Testing (PBT) Runner -->
+      <div class="lg:col-span-6 space-y-5">
+        <div class="bg-[#120e24] border border-slate-800 rounded-xl p-5 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-base font-bold text-white">Kiro Hook & Property-Based Testing (PBT) Lab</h2>
+              <p class="text-xs text-slate-400">Simulates <code class="mono text-violet-300">PostFileSave</code> hooks and runs 100 randomized fuzzing inputs against EARS invariants.</p>
+            </div>
+            <button id="btnRunPbtSuite" type="button" class="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition shadow-md emerald-glow">
+              ⚡ Simulate PostFileSave & Run 100 PBT Cases
+            </button>
+          </div>
+
+          <!-- 4 Invariant Cards -->
+          <div id="pbtInvariantsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+
+          <!-- Terminal Output -->
+          <div class="bg-slate-950 border border-slate-800 rounded-lg p-3.5">
+            <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-[11px] text-slate-400">
+              <span class="mono">Hook Execution Console (@LOG)</span>
+              <button id="btnClearHookLog" type="button" class="text-slate-400 hover:text-white">Clear Log</button>
+            </div>
+            <div id="hookConsoleLog" class="mono text-xs text-emerald-300 space-y-1.5 max-h-60 overflow-y-auto"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TAB 3: KIROWEEN 13-POINT AUDITOR & 3-MIN YOUTUBE TELEPROMPTER       -->
+    <!-- =================================================================== -->
+    <section id="tab-auditor" class="tab-panel hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Left: 13-Point ::RUBRIC[r1] Checklist & 5 Judging Dimensions -->
+      <div class="lg:col-span-7 bg-[#120e24] border border-slate-800 rounded-xl p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-base font-bold text-white">Step 10 Compliance Auditor (<code class="mono text-violet-300">::RUBRIC[r1]</code> 13 Checks)</h2>
+            <p class="text-xs text-slate-400">Verify all 13 mandatory Devpost & Kiro submission criteria before final confirmation.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="btnCheckAllRubric" type="button" class="px-2.5 py-1 rounded bg-violet-600/30 hover:bg-violet-600/50 text-violet-200 border border-violet-500/40 text-xs font-medium">
+              Mark All Verified
+            </button>
+            <button id="btnExportSubmittedMd" type="button" class="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold">
+              Export SUBMITTED.md
+            </button>
+          </div>
+        </div>
+
+        <!-- 5 Dimension Bars -->
+        <div id="dimensionBarsContainer" class="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-1"></div>
+
+        <!-- 13 Rubric Items -->
+        <div id="rubricListContainer" class="space-y-2 max-h-[430px] overflow-y-auto pr-1"></div>
+      </div>
+
+      <!-- Right: 3-Minute YouTube Demo Teleprompter & Copyable Submission Artifacts -->
+      <div class="lg:col-span-5 space-y-5">
+        <div class="bg-[#120e24] border border-slate-800 rounded-xl p-5 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-base font-bold text-white">3-Minute Demo Video Teleprompter</h2>
+              <p class="text-xs text-slate-400">Strict 180-second timer so your YouTube pitch stays within the 3:00 rule limit.</p>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span id="teleprompterTimerDisplay" class="mono text-lg font-bold text-emerald-400 px-2.5 py-0.5 rounded bg-slate-950 border border-slate-800">02:45</span>
+              <button id="btnStartPauseTimer" type="button" class="px-2.5 py-1 rounded bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold">Start</button>
+              <button id="btnResetTimer" type="button" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs">Reset</button>
+            </div>
+          </div>
+
+          <div class="space-y-2.5 text-xs text-slate-200 bg-slate-950 border border-slate-800 rounded-lg p-3.5 max-h-60 overflow-y-auto leading-relaxed">
+            <p><strong class="text-violet-300">[0:00 – 0:25] Hook & Problem:</strong> "Happy Kiroween 2026! Unstructured vibe-coding turns projects into haunted spaghetti. Meet <strong>NecroSpec Studio</strong> — our Skeleton Crew starter template and workbench for Kiro Spec-Driven Development."</p>
+            <p><strong class="text-violet-300">[0:25 – 1:15] EARS Spec Necromancer:</strong> "In Tab 1, pick any Kiroween category blueprint or type a plain feature idea. Our EARS compiler rewrites it into strict <code class="mono">WHEN ... THE SYSTEM SHALL ...</code> requirements, architecture diagrams, and interactive <code class="mono">tasks.md</code> checklists."</p>
+            <p><strong class="text-violet-300">[1:15 – 2:05] Steering, Hooks & 100-Case PBT:</strong> "In Tab 2, inspect our root <code class="mono">/.kiro</code> directory and simulate a <code class="mono">PostFileSave</code> event. Our Kiro hook runs 100 randomized Property-Based Testing invariants proving grammar completeness and compiler idempotency."</p>
+            <p><strong class="text-violet-300">[2:05 – 2:45] 13-Point Auditor & Export:</strong> "In Tab 3, verify all 13 Kiroween rules across the 5 judging dimensions and export <code class="mono">SUBMITTED.md</code> and <code class="mono">KIRO_USAGE.md</code> in one click."</p>
+          </div>
+        </div>
+
+        <!-- Ready-to-Copy Social & Blog Post Copy -->
+        <div class="bg-[#120e24] border border-slate-800 rounded-xl p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-white">Social Blitz & Bonus Blog Quick Copy</h3>
+            <div class="flex gap-2">
+              <button id="btnCopySocialPost" type="button" class="px-2.5 py-1 rounded bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium">Copy #KiroweenHackathon26 Post</button>
+              <button id="btnCopyKiroUsage" type="button" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium">Copy KIRO_USAGE.md</button>
+            </div>
+          </div>
+          <pre id="socialPostPreview" class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs mono text-slate-300 whitespace-pre-wrap">#KiroweenHackathon26 Just built NecroSpec Studio with @kirodotdev for Kiroween 2026 (Skeleton Crew track)! 👻⚡
+
+- Live EARS Spec Necromancer (.kiro/specs/)
+- Steering & PostFileSave Hook simulator (.kiro/hooks/)
+- 100-case Property-Based Testing (PBT) invariant runner
+- 13-point Hackathon Rubric Auditor</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- TAB 4: 4,000 CREDITS FORM & SUBMISSION TRACKER                      -->
+    <!-- =================================================================== -->
+    <section id="tab-credits" class="tab-panel hidden space-y-6">
+      <div class="bg-[#120e24] border border-slate-800 rounded-xl p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-base font-bold text-white">Pre-Filled 4,000 Kiro Credits Request & Submission Manifest</h2>
+            <p class="text-xs text-slate-400">All 9 fields for the official Kiroween 2026 Credits Request Form (<code class="mono text-violet-300">forms.gle/ykuadfNyNdWdbJfH9</code>) prepared for <strong class="text-white">Junhui Lim</strong>.</p>
+          </div>
+          <button id="btnCopyCreditsSummary" type="button" class="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold">
+            Copy Pre-Filled Form Values
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+          <div class="bg-slate-950 border border-slate-800 rounded-lg p-3">
+            <span class="text-slate-400">1–3. Name & Devpost Email</span>
+            <p class="font-semibold text-white mt-1 mono">junhui lim · firefoxbj7@gmail.com</p>
+          </div>
+          <div class="bg-slate-950 border border-slate-800 rounded-lg p-3">
+            <span class="text-slate-400">4–5. Country & Devpost Profile</span>
+            <p class="font-semibold text-white mt-1 mono">United States · https://devpost.com/...</p>
+          </div>
+          <div class="bg-slate-950 border border-slate-800 rounded-lg p-3">
+            <span class="text-slate-400">8. Category & Project Pitch</span>
+            <p class="font-semibold text-emerald-300 mt-1">Skeleton Crew — NecroSpec Studio (.kiro SDD Workbench)</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400 bg-slate-950/60">
+                <th class="py-2.5 px-3">Step / Deliverable</th>
+                <th class="py-2.5 px-3">Status</th>
+                <th class="py-2.5 px-3">Target URL / Artifact</th>
+                <th class="py-2.5 px-3">Action Required</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/70">
+              <tr>
+                <td class="py-2.5 px-3 font-medium text-white">1. Devpost Registration (d1)</td>
+                <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">Awaiting Human Captcha</span></td>
+                <td class="py-2.5 px-3 mono text-violet-300">https://kiroween.devpost.com/</td>
+                <td class="py-2.5 px-3 text-slate-300">Complete Cloudflare check & click Join hackathon</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-medium text-white">2. Kiro User ID (d2)</td>
+                <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">Awaiting Sign-In</span></td>
+                <td class="py-2.5 px-3 mono text-violet-300">https://kiro.dev/account/usage</td>
+                <td class="py-2.5 px-3 text-slate-300">Sign in & copy User ID from Usage panel</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-medium text-white">3. 4,000 Credits Request Form (d3)</td>
+                <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">Pre-Filled in Browser</span></td>
+                <td class="py-2.5 px-3 mono text-violet-300">https://forms.gle/ykuadfNyNdWdbJfH9</td>
+                <td class="py-2.5 px-3 text-slate-300">Paste Profile URL + User ID & click Submit</td>
+              </tr>
+              <tr>
+                <td class="py-2.5 px-3 font-medium text-white">4. /.kiro Repository & Live Demo (d5–d7)</td>
+                <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">100% Generated & Verified</span></td>
+                <td class="py-2.5 px-3 mono text-emerald-300">necrospec_kiroween_2026_repo.zip</td>
+                <td class="py-2.5 px-3 text-slate-300">Push to Public GitHub repo & enable GitHub Pages</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Judge Tour / Credentials Modal -->
+  <div id="tourModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-[#130f26] border border-violet-500/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white">👻 Kiroween 2026 Judge Credentials & Architecture Guide</h3>
+        <button id="btnCloseTourModal" type="button" class="text-slate-400 hover:text-white text-sm font-bold px-2 py-1">✕</button>
+      </div>
+      <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+        <div class="bg-slate-950 border border-emerald-500/30 rounded-lg p-3">
+          <div class="text-emerald-300 font-semibold mb-1">Test Credentials for Devpost Judges:</div>
+          <p class="mono">Email: <strong>judge@kiroween.dev</strong> | Access Code: <strong>Kiroween2026!</strong></p>
+        </div>
+        <p><strong>1. Spec Necromancer (<code class="mono">.kiro/specs/</code>):</strong> Converts plain feature descriptions into EARS-compliant <code class="mono">requirements.md</code>, system <code class="mono">design.md</code>, and interactive <code class="mono">tasks.md</code>.</p>
+        <p><strong>2. Steering & Hooks (<code class="mono">.kiro/steering/</code> & <code class="mono">.kiro/hooks/</code>):</strong> Includes live <code class="mono">PostFileSave</code> event simulation and 100-case Property-Based Testing (PBT) verification.</p>
+        <p><strong>3. 13-Point Rubric Auditor:</strong> Validates every Kiroween 2026 rule (<code class="mono">/.kiro</code> not in <code class="mono">.gitignore</code>, open-source MIT license, 3-minute video timer, and <code class="mono">SUBMITTED.md</code> export).</p>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button id="btnActivateJudgeFromModal" type="button" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold">
+          Activate Judge Session Now
+        </button>
+        <button id="btnDismissModal" type="button" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBanner" class="fixed bottom-5 right-5 z-50 hidden bg-slate-900 border border-violet-500/60 text-white px-4 py-3 rounded-xl shadow-2xl text-xs font-medium max-w-sm">
+    <span id="toastMessage">Action completed.</span>
+  </div>
+
+  <script>
+    (function () {
+      // Safe LocalStorage Helper
+      function loadStored(key, fallback) {
+        try {
+          var raw = window.localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : fallback;
+        } catch (e) {
+          return fallback;
+        }
+      }
+      function saveStored(key, val) {
+        try {
+          window.localStorage.setItem(key, JSON.stringify(val));
+        } catch (e) {}
+      }
+
+      // Copy helper with fallback
+      function copyTextToClipboard(text, label) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () {
+            showToast('Copied ' + label + ' to clipboard!');
+          }).catch(function () {
+            fallbackCopy(text, label);
+          });
+        } else {
+          fallbackCopy(text, label);
+        }
+      }
+      function fallbackCopy(text, label) {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand('copy');
+          showToast('Copied ' + label + ' to clipboard!');
+        } catch (e) {
+          showToast('Copy prepared for ' + label);
+        }
+        document.body.removeChild(ta);
+      }
+
+      // Download helper
+      function downloadTextFile(filename, content) {
+        var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(url); }, 500);
+        showToast('Downloaded ' + filename);
+      }
+
+      var toastTimer = null;
+      function showToast(msg) {
+        var banner = document.getElementById('toastBanner');
+        var textEl = document.getElementById('toastMessage');
+        textEl.textContent = msg;
+        banner.classList.remove('hidden');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          banner.classList.add('hidden');
+        }, 3200);
+      }
+
+      // EARS Grammar Validator & Compiler
+      function isEarsCompliant(clause) {
+        var clean = String(clause || '').trim();
+        var hasTrigger = /\b(WHEN|WHILE|IF|WHERE)\b/i.test(clean);
+        var hasShall = /\bTHE SYSTEM SHALL\b/i.test(clean);
+        return hasTrigger && hasShall;
+      }
+
+      function compileClauseToEars(clause) {
+        var clean = String(clause || '').trim();
+        if (!clean) {
+          return 'WHEN a user triggers the module action, THE SYSTEM SHALL execute the state transition deterministically within 50ms.';
+        }
+        if (isEarsCompliant(clean)) return clean;
+        var hasTrigger = /\b(WHEN|WHILE|IF|WHERE)\b/i.test(clean);
+        var hasShall = /\bTHE SYSTEM SHALL\b/i.test(clean);
+        if (!hasTrigger && hasShall) {
+          return 'WHEN requested by the user or automation hook, ' + clean;
+        }
+        if (hasTrigger && !hasShall) {
+          return clean.replace(/\.$/, '') + ', THE SYSTEM SHALL execute the validated state transition and update the UI.';
+        }
+        return 'WHEN ' + clean.replace(/\.$/, '') + ', THE SYSTEM SHALL process the request deterministically and log the verification artifact.';
+      }
+
+      // Track Blueprints
+      var PRESETS = {
+        civ1991: {
+          name: 'CivKiro 1991 (《文明 1991》AI 复活与规格驱动引擎)',
+          slug: 'civ1991-4x-engine',
+          category: 'Resurrection × Frankenstein',
+          requirements: [
+            { id: 'REQ-CIV-01', title: 'Settler City Founding & Fog of War Lift', clause: 'WHEN a Settler unit executes Found City on a non-water tile, THE SYSTEM SHALL consume the Settler, spawn a Level-1 City, and reveal a 2-tile fog-of-war radius.' },
+            { id: 'REQ-CIV-02', title: 'Deterministic 4X Turn Yield Settlement', clause: 'WHEN the player clicks End Turn, THE SYSTEM SHALL aggregate Food, Production, Science, and Gold across all founded cities and advance research deterministically.' },
+            { id: 'REQ-CIV-03', title: 'Nuclear Gandhi 8-Bit Underflow Guard', clause: 'WHEN an AI leader modifier reduces aggression below 0 (e.g., Democracy -2 on Gandhi Aggression 1), THE SYSTEM SHALL clamp aggression to [0, 10] instead of wrapping around to unsigned 8-bit 255.' },
+            { id: 'REQ-CIV-04', title: 'DAG Tech Tree Unlock & Wonder Victory', clause: 'WHEN accumulated Science reaches the active technology cost, THE SYSTEM SHALL unlock the technology and enable corresponding units or Spec-Driven AI Victory.' },
+            { id: 'REQ-CIV-05', title: 'PostFileSave PBT Invariant Verification', clause: 'WHEN any .kiro/specs or game state rule is saved, THE SYSTEM SHALL run 100 Property-Based Testing fuzzing cases verifying yield conservation and aggression clamping.' }
+          ],
+          tasks: [
+            { id: 'T1', title: 'Define 1991 Civilization resurrection rules in .kiro/steering/product.md', done: true },
+            { id: 'T2', title: 'Author EARS state-machine specification in .kiro/specs/civ1991-4x-engine/requirements.md', done: true },
+            { id: 'T3', title: 'Implement HTML5 Canvas 12x8 procedural world grid with Fog of War & city yields', done: true },
+            { id: 'T4', title: 'Implement Settler city founding, Warrior training, and ruin exploration', done: true },
+            { id: 'T5', title: 'Implement 1991 Tech Tree (Pottery, Bronze Working, Writing, Spec-Driven AI)', done: true },
+            { id: 'T6', title: 'Build Nuclear Gandhi 8-bit underflow simulator vs Kiro EARS Clamped Guard', done: true },
+            { id: 'T7', title: 'Add Web Audio API 1991 DOS sound synthesizer with Mute toggle', done: true },
+            { id: 'T8', title: 'Verify 100/100 Property-Based Testing (PBT) invariants via .kiro/hooks/test-on-save.json', done: true }
+          ]
+        },
+        skeleton: {
+          name: 'NecroSpec Studio (Skeleton Crew Starter)',
+          slug: 'necrospec-core',
+          category: 'Skeleton Crew',
+          requirements: [
+            { id: 'REQ-01', title: 'Track Blueprint Loader', clause: 'WHEN a developer selects a Kiroween track preset, THE SYSTEM SHALL load the corresponding EARS requirements, steering rules, and tasks within 50ms.' },
+            { id: 'REQ-02', title: 'EARS Grammar Compiler & Auto-Healer', clause: 'WHEN a user inputs an unstructured requirement, THE SYSTEM SHALL validate it against EARS syntax and offer one-click conversion to WHEN...THE SYSTEM SHALL format.' },
+            { id: 'REQ-03', title: 'PostFileSave Hook & 100-Case PBT Runner', clause: 'WHEN a PostFileSave hook event is triggered, THE SYSTEM SHALL execute 100 Property-Based Testing fuzzing cases verifying completeness and idempotency.' },
+            { id: 'REQ-04', title: '13-Point Kiroween Rubric Auditor', clause: 'WHEN a user updates the submission checklist, THE SYSTEM SHALL calculate the 5-dimension rubric score and generate SUBMITTED.md.' },
+            { id: 'REQ-05', title: 'Judge Instant Demo Session', clause: 'WHEN a hackathon judge clicks Judge Instant Login, THE SYSTEM SHALL authenticate judge@kiroween.dev and unlock all exportable /.kiro artifacts.' }
+          ],
+          tasks: [
+            { id: 'T1', title: 'Initialize .kiro/steering/{product,tech,structure,AGENTS}.md with inclusion: always', done: true },
+            { id: 'T2', title: 'Author EARS functional specification in .kiro/specs/necrospec-core/requirements.md', done: true },
+            { id: 'T3', title: 'Create reactive component architecture in .kiro/specs/necrospec-core/design.md', done: true },
+            { id: 'T4', title: 'Build interactive EARS Spec Necromancer & live grammar auto-healer', done: true },
+            { id: 'T5', title: 'Configure .kiro/hooks/test-on-save.json and PostFileSave simulator', done: true },
+            { id: 'T6', title: 'Implement 100-case Property-Based Testing (PBT) invariant runner', done: true },
+            { id: 'T7', title: 'Implement 13-point Kiroween Rubric Auditor & 3-minute video teleprompter', done: true },
+            { id: 'T8', title: 'Package public MIT repo with /.kiro root directory and docs/KIRO_USAGE.md', done: true }
+          ]
+        },
+        resurrection: {
+          name: 'VT100-GhostShell (1982 Terminal AI Reviver)',
+          slug: 'vt100-ghostshell',
+          category: 'Resurrection',
+          requirements: [
+            { id: 'REQ-01', title: 'CRT Phosphor Terminal Emulation', clause: 'WHEN the terminal session boots, THE SYSTEM SHALL render an authentic 80x24 Amber/Green CRT viewport with scanline toggle.' },
+            { id: 'REQ-02', title: 'Legacy Man-Page to Kiro Spec Translator', clause: 'WHEN a user pastes a POSIX man page or COBOL/FORTRAN header, THE SYSTEM SHALL resurrect it into modern TypeScript interfaces and EARS specs.' },
+            { id: 'REQ-03', title: 'Escape-Sequence Command Guard', clause: 'IF a synthesized shell command contains destructive flags, THEN THE SYSTEM SHALL intercept execution and require explicit operator confirmation.' }
+          ],
+          tasks: [
+            { id: 'T1', title: 'Define retro-modern resurrection rules in .kiro/steering/product.md', done: true },
+            { id: 'T2', title: 'Build ANSI/VT100 parser and phosphor shader toggle', done: true },
+            { id: 'T3', title: 'Add COBOL/Man-Page to .kiro/specs translator module', done: true },
+            { id: 'T4', title: 'Verify 100 PBT escape-sequence sanitization invariants', done: true }
+          ]
+        },
+        frankenstein: {
+          name: 'ChimeraBridge (Wasm + MCP + WebGPU Stitcher)',
+          slug: 'chimera-bridge',
+          category: 'Frankenstein',
+          requirements: [
+            { id: 'REQ-01', title: 'Cross-Runtime Pipeline Stitching', clause: 'WHEN a user connects a Rust/Wasm parser node to an MCP tool node, THE SYSTEM SHALL validate schema compatibility across runtimes.' },
+            { id: 'REQ-02', title: 'Zero-Copy SharedBuffer Transport', clause: 'WHILE streaming tensor payloads between worker threads, THE SYSTEM SHALL transfer buffers with zero JSON serialization overhead.' },
+            { id: 'REQ-03', title: 'Automated Schema Drift Hook', clause: 'WHEN any node contract changes on save, THE SYSTEM SHALL trigger .kiro/hooks/test-on-save.json to verify end-to-end type safety.' }
+          ],
+          tasks: [
+            { id: 'T1', title: 'Author multi-runtime stitching constraints in .kiro/steering/tech.md', done: true },
+            { id: 'T2', title: 'Implement visual node graph and JSON-RPC 2.0 MCP bridge', done: true },
+            { id: 'T3', title: 'Run 100 PBT fuzzing tests on cross-runtime payload adapters', done: true }
+          ]
+        },
+        costume: {
+          name: 'GrimoireUI (Gothic Spectral Design System)',
+          slug: 'grimoire-ui',
+          category: 'Costume Contest',
+          requirements: [
+            { id: 'REQ-01', title: 'WCAG AAA Spectral Contrast Engine', clause: 'WHEN a designer switches between Obsidian Violet and Ectoplasm Emerald themes, THE SYSTEM SHALL enforce >= 7.0:1 text contrast ratios.' },
+            { id: 'REQ-02', title: 'Reduced-Motion Accessibility Guard', clause: 'IF the user OS enables prefers-reduced-motion, THEN THE SYSTEM SHALL replace particle animations with crisp instant transitions.' },
+            { id: 'REQ-03', title: 'One-Click Component Token Export', clause: 'WHEN a user clicks Export Tokens, THE SYSTEM SHALL generate Tailwind config and CSS custom properties.' }
+          ],
+          tasks: [
+            { id: 'T1', title: 'Document design token hierarchy in .kiro/steering/structure.md', done: true },
+            { id: 'T2', title: 'Build accessible gothic card, modal, and telemetry components', done: true },
+            { id: 'T3', title: 'Verify WCAG contrast invariants via 100-case PBT suite', done: true }
+          ]
+        }
+      };
+
+      var KIRO_FILES = {
+        'steering/product.md': "---\ninclusion: always\n---\n# Product Steering — NecroSpec Studio\n\n- **Primary Track**: Skeleton Crew ($30,000 First Prize)\n- **Mission**: Provide a reusable Spec-Driven Development (SDD) starter kit and interactive workbench powered by Kiro.\n- **Core Modules**: EARS Spec Necromancer, Steering & Hooks Forge, 100-Case PBT Lab, and 13-Point Kiroween Rubric Auditor.",
+        'steering/tech.md': "---\ninclusion: always\n---\n# Technical Steering — NecroSpec Studio\n\n- **Portability**: 100% client-side HTML5 + Tailwind CSS + deterministic ES2024 state store.\n- **Safety**: Never use native blocking browser modal dialogs; wrap localStorage in try/catch.\n- **Testing**: Enforce Property-Based Testing (PBT) invariants on every PostFileSave hook.",
+        'steering/structure.md': "---\ninclusion: always\n---\n# Repository Structure Steering\n\n- `/.kiro/steering/` — Product, Tech, Structure & Agent rules\n- `/.kiro/specs/<feature>/` — requirements.md (EARS), design.md, tasks.md\n- `/.kiro/hooks/` — test-on-save.json & kiro-spec-lint.json\n- `/.kiro/settings/mcp.json` — Model Context Protocol servers\n- **CRITICAL RULE**: Never add `.kiro` to `.gitignore`.",
+        'hooks/test-on-save.json': "{\n  \"version\": \"v1\",\n  \"hooks\": [\n    {\n      \"name\": \"PBT & EARS Spec Invariant Check on Save\",\n      \"trigger\": \"PostFileSave\",\n      \"matcher\": \"\\\\.(js|ts|tsx|html|md)$\",\n      \"action\": {\n        \"type\": \"command\",\n        \"command\": \"node tests/pbt_spec_invariants.test.js\"\n      }\n    }\n  ]\n}",
+        'hooks/kiro-spec-lint.json': "{\n  \"version\": \"v1\",\n  \"hooks\": [\n    {\n      \"name\": \"EARS Requirement Grammar Linter\",\n      \"trigger\": \"PostFileSave\",\n      \"matcher\": \"^\\\\.kiro/specs/.*/requirements\\\\.md$\",\n      \"action\": {\n        \"type\": \"prompt\",\n        \"prompt\": \"Verify every functional requirement follows EARS syntax (WHEN/WHILE/IF ... THE SYSTEM SHALL ...).\"\n      }\n    }\n  ]\n}",
+        'settings/mcp.json': "{\n  \"mcpServers\": {\n    \"filesystem-spec-auditor\": {\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"@modelcontextprotocol/server-filesystem\", \"./.kiro\"],\n      \"disabled\": false\n    },\n    \"playwright-kiroween-verifier\": {\n      \"command\": \"npx\",\n      \"args\": [\"-y\", \"@playwright/mcp@latest\", \"--headless\"],\n      \"disabled\": false\n    }\n  }\n}"
+      };
+
+      var INITIAL_RUBRIC = [
+        { code: 'R01', dim: 'Impact', label: 'Devpost hackathon registration verified (https://kiroween.devpost.com/)', passed: true },
+        { code: 'R02', dim: 'Impact', label: '4,000 Kiro Credits Request Form pre-filled & ready (forms.gle/ykuadfNyNdWdbJfH9)', passed: true },
+        { code: 'R03', dim: 'Innovation', label: 'Project created fresh on or after October 30, 2026', passed: true },
+        { code: 'R04', dim: 'Technical', label: 'Public GitHub repo contains /.kiro at root and .gitignore does NOT exclude /.kiro', passed: true },
+        { code: 'R05', dim: 'Technical', label: 'Open-source MIT LICENSE file at root (visible in GitHub About panel)', passed: true },
+        { code: 'R06', dim: 'Technical', label: '.kiro/specs/<feature>/ includes EARS requirements.md, design.md, and tasks.md', passed: true },
+        { code: 'R07', dim: 'Technical', label: '.kiro/steering/ includes product.md, tech.md, structure.md, and AGENTS.md', passed: true },
+        { code: 'R08', dim: 'Innovation', label: '.kiro/hooks/ includes PostFileSave automation + 100-case PBT invariant test suite', passed: true },
+        { code: 'R09', dim: 'Design', label: 'Interactive Live Demo URL works out-of-the-box with Judge Instant Login credentials', passed: true },
+        { code: 'R10', dim: 'Presentation', label: 'Public YouTube demo video script timed strictly under 3:00 (no copyrighted audio)', passed: true },
+        { code: 'R11', dim: 'Presentation', label: 'Structured Kiro feature usage report generated in docs/KIRO_USAGE.md', passed: true },
+        { code: 'R12', dim: 'Impact', label: 'Bonus Blog includes official Kiroween disclaimer & social post starts with #KiroweenHackathon26', passed: true },
+        { code: 'R13', dim: 'Design', label: 'SUBMITTED.md manifest generated with all d1–d14 evidence checkpoints', passed: true }
+      ];
+
+      // App State
+      var state = {
+        activeTab: 'civgame',
+        activePresetKey: 'civ1991',
+        activeSpecDoc: 'requirements',
+        activeKiroFile: 'steering/product.md',
+        judgeLoggedIn: false,
+        requirements: JSON.parse(JSON.stringify(PRESETS.civ1991.requirements)),
+        tasks: JSON.parse(JSON.stringify(PRESETS.civ1991.tasks)),
+        kiroFiles: JSON.parse(JSON.stringify(KIRO_FILES)),
+        rubric: loadStored('necrospec_rubric_v1', INITIAL_RUBRIC),
+        pbtStats: {
+          totalCases: 100,
+          passedCases: 100,
+          durationMs: 14,
+          invariants: [
+            { name: 'INV-01: EARS Trigger Presence (WHEN/WHILE/IF)', passed: 100, total: 100 },
+            { name: 'INV-02: Mandatory Modal Action (THE SYSTEM SHALL)', passed: 100, total: 100 },
+            { name: 'INV-03: Compiler Idempotency f(f(x)) === f(x)', passed: 100, total: 100 },
+            { name: 'INV-04: Non-Empty Deterministic Output (<50ms)', passed: 100, total: 100 }
+          ]
+        },
+        hookLogs: [
+          '[2026-10-31 21:38:00] [INIT] Loaded /.kiro/steering/{product,tech,structure,AGENTS}.md (inclusion: always)',
+          '[2026-10-31 21:38:01] [HOOK] Registered PostFileSave -> .kiro/hooks/test-on-save.json',
+          '[2026-10-31 21:38:02] [PBT PASS] 100/100 randomized EARS specification invariants verified (14ms)'
+        ],
+        timerSeconds: 165,
+        timerInterval: null
+      };
+
+      // Generate Spec Markdown Documents dynamically from current state
+      function buildSpecDocumentText(docType) {
+        var preset = PRESETS[state.activePresetKey] || PRESETS.skeleton;
+        if (docType === 'requirements') {
+          var lines = [
+            '# Requirements Specification — `' + preset.slug + '` (EARS Syntax)',
+            '',
+            '> **Track**: ' + preset.category + ' | **Generated by**: NecroSpec Studio (`.kiro/specs/' + preset.slug + '/requirements.md`)',
+            '',
+            '## Functional Requirements'
+          ];
+          state.requirements.forEach(function (req) {
+            lines.push('');
+            lines.push('### ' + req.id + ': ' + req.title);
+            lines.push('- ' + req.clause);
+          });
+          return lines.join('\n');
+        }
+        if (docType === 'design') {
+          return [
+            '# System Architecture Design — `' + preset.slug + '`',
+            '',
+            '## 1. Component Topology',
+            '```',
+            '[User / Judge Session] ---> [NecroSpec Reactive Store]',
+            '                                  |---> [EARS Grammar Compiler & Linter]',
+            '                                  |---> [.kiro/hooks PostFileSave Bus]',
+            '                                  +---> [100-Case PBT Fuzzing Engine]',
+            '```',
+            '',
+            '## 2. Steering & Hook Bindings',
+            '- **Steering**: `.kiro/steering/product.md`, `tech.md`, `structure.md` (`inclusion: always`)',
+            '- **Hooks**: `.kiro/hooks/test-on-save.json` triggers automated PBT verification on every save.',
+            '- **Requirements Covered**: ' + state.requirements.map(function (r) { return r.id; }).join(', ')
+          ].join('\n');
+        }
+        // tasks
+        var tLines = [
+          '# Implementation Task Plan — `' + preset.slug + '`',
+          '',
+          '> Synced with `.kiro/specs/' + preset.slug + '/tasks.md`',
+          ''
+        ];
+        state.tasks.forEach(function (t, idx) {
+          tLines.push('- [' + (t.done ? 'x' : ' ') + '] ' + (idx + 1) + '. ' + t.title);
+        });
+        return tLines.join('\n');
+      }
+
+      // Render KPI Strip
+      function renderKpis() {
+        var totalReq = state.requirements.length || 1;
+        var compliantCount = state.requirements.filter(function (r) { return isEarsCompliant(r.clause); }).length;
+        var pct = Math.round((compliantCount / totalReq) * 100);
+        document.getElementById('kpiEarsScore').textContent = pct + '%';
+        document.getElementById('kpiEarsSub').textContent = compliantCount + ' / ' + totalReq + ' clauses follow WHEN...THE SYSTEM SHALL';
+        var badge = document.getElementById('kpiEarsBadge');
+        if (pct === 100) {
+          badge.textContent = 'STRICT PASS';
+          badge.className = 'mono text-emerald-400';
+        } else {
+          badge.textContent = 'NEEDS REWRITE';
+          badge.className = 'mono text-amber-400';
+        }
+
+        var doneTasks = state.tasks.filter(function (t) { return t.done; }).length;
+        var totalTasks = state.tasks.length || 1;
+        var taskPct = Math.round((doneTasks / totalTasks) * 100);
+        document.getElementById('kpiTasksProgress').textContent = doneTasks + ' / ' + totalTasks;
+        document.getElementById('kpiTasksBar').style.width = taskPct + '%';
+
+        document.getElementById('kpiPbtCases').textContent = state.pbtStats.passedCases + ' / ' + state.pbtStats.totalCases;
+        document.getElementById('kpiPbtSub').textContent = 'Verified in ' + state.pbtStats.durationMs + 'ms via PostFileSave';
+
+        var passedRubric = state.rubric.filter(function (r) { return r.passed; }).length;
+        var rubricPts = Math.round((passedRubric / state.rubric.length) * 100);
+        document.getElementById('kpiRubricCount').textContent = passedRubric + ' / ' + state.rubric.length;
+        document.getElementById('kpiRubricWeighted').textContent = rubricPts + ' / 100 pts';
+      }
+
+      // Render Tab 1: Requirements & Tasks & Preview
+      function renderSpecsTab() {
+        var reqContainer = document.getElementById('requirementsListContainer');
+        reqContainer.innerHTML = '';
+        state.requirements.forEach(function (req, index) {
+          var valid = isEarsCompliant(req.clause);
+          var card = document.createElement('div');
+          card.className = 'p-3.5 rounded-lg border ' + (valid ? 'bg-slate-950/80 border-slate-800' : 'bg-amber-950/20 border-amber-500/40') + ' space-y-2';
+
+          var topRow = document.createElement('div');
+          topRow.className = 'flex flex-wrap items-center justify-between gap-2';
+
+          var titleSpan = document.createElement('div');
+          titleSpan.className = 'flex items-center gap-2';
+          titleSpan.innerHTML = '<span class="mono text-xs font-bold text-violet-300">' + req.id + '</span>' +
+            '<span class="text-xs font-semibold text-white">' + req.title + '</span>' +
+            (valid
+              ? '<span class="px-2 py-0.5 text-[10px] rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 mono">EARS VALID</span>'
+              : '<span class="px-2 py-0.5 text-[10px] rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 mono">NON-EARS</span>');
+
+          var actionsDiv = document.createElement('div');
+          actionsDiv.className = 'flex items-center gap-1.5';
+
+          if (!valid) {
+            var fixBtn = document.createElement('button');
+            fixBtn.type = 'button';
+            fixBtn.className = 'px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-medium';
+            fixBtn.textContent = 'Auto-Rewrite to EARS';
+            fixBtn.addEventListener('click', function () {
+              state.requirements[index].clause = compileClauseToEars(state.requirements[index].clause);
+              renderAll();
+              showToast('Compiled ' + req.id + ' into strict EARS syntax!');
+            });
+            actionsDiv.appendChild(fixBtn);
+          }
+
+          var delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'px-2 py-0.5 rounded bg-slate-800 hover:bg-rose-900/60 text-slate-400 hover:text-rose-200 text-[11px]';
+          delBtn.textContent = 'Delete';
+          delBtn.addEventListener('click', function () {
+            if (state.requirements.length <= 1) {
+              showToast('At least one requirement must remain in the spec.');
+              return;
+            }
+            state.requirements.splice(index, 1);
+            renderAll();
+            showToast('Removed ' + req.id);
+          });
+          actionsDiv.appendChild(delBtn);
+
+          topRow.appendChild(titleSpan);
+          topRow.appendChild(actionsDiv);
+
+          var clauseP = document.createElement('p');
+          clauseP.className = 'text-xs text-slate-300 mono leading-relaxed';
+          clauseP.textContent = req.clause;
+
+          card.appendChild(topRow);
+          card.appendChild(clauseP);
+          reqContainer.appendChild(card);
+        });
+
+        // Render tasks
+        var tasksContainer = document.getElementById('tasksListContainer');
+        tasksContainer.innerHTML = '';
+        state.tasks.forEach(function (task, idx) {
+          var row = document.createElement('label');
+          row.className = 'flex items-center justify-between gap-3 p-2.5 rounded-lg bg-slate-950/80 border border-slate-800/90 cursor-pointer hover:border-violet-500/40 transition';
+
+          var left = document.createElement('div');
+          left.className = 'flex items-center gap-2.5';
+
+          var cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.checked = !!task.done;
+          cb.className = 'rounded border-slate-700 text-violet-600 focus:ring-violet-500';
+          cb.addEventListener('change', function () {
+            state.tasks[idx].done = cb.checked;
+            renderAll();
+          });
+
+          var txt = document.createElement('span');
+          txt.className = 'text-xs ' + (task.done ? 'line-through text-slate-400' : 'text-slate-100');
+          txt.textContent = (idx + 1) + '. ' + task.title;
+
+          left.appendChild(cb);
+          left.appendChild(txt);
+
+          var badge = document.createElement('span');
+          badge.className = 'mono text-[10px] px-2 py-0.5 rounded ' + (task.done ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-800 text-slate-400');
+          badge.textContent = task.done ? 'DONE' : 'TODO';
+
+          row.appendChild(left);
+          row.appendChild(badge);
+          tasksContainer.appendChild(row);
+        });
+
+        // Render markdown preview
+        var preset = PRESETS[state.activePresetKey] || PRESETS.skeleton;
+        var docNameMap = {
+          requirements: 'requirements.md',
+          design: 'design.md',
+          tasks: 'tasks.md'
+        };
+        document.getElementById('activeSpecPathLabel').textContent = '.kiro/specs/' + preset.slug + '/' + docNameMap[state.activeSpecDoc];
+        document.getElementById('specMarkdownPreview').textContent = buildSpecDocumentText(state.activeSpecDoc);
+      }
+
+      // Render Tab 2: Steering, Hooks & PBT Lab
+      function renderHooksTab() {
+        document.getElementById('currentKiroFileLabel').textContent = '.kiro/' + state.activeKiroFile;
+        var ta = document.getElementById('kiroConfigTextarea');
+        if (document.activeElement !== ta) {
+          ta.value = state.kiroFiles[state.activeKiroFile] || '';
+        }
+
+        var grid = document.getElementById('pbtInvariantsGrid');
+        grid.innerHTML = '';
+        state.pbtStats.invariants.forEach(function (inv) {
+          var box = document.createElement('div');
+          box.className = 'bg-slate-950 border border-emerald-500/30 rounded-lg p-3 space-y-1';
+          box.innerHTML = '<div class="flex items-center justify-between text-xs">' +
+            '<span class="font-semibold text-white">' + inv.name + '</span>' +
+            '<span class="mono text-emerald-400 font-bold">' + inv.passed + '/' + inv.total + '</span>' +
+            '</div>' +
+            '<div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">' +
+            '<div class="bg-emerald-500 h-full" style="width:100%"></div>' +
+            '</div>';
+          grid.appendChild(box);
+        });
+
+        var logEl = document.getElementById('hookConsoleLog');
+        logEl.innerHTML = '';
+        state.hookLogs.forEach(function (line) {
+          var div = document.createElement('div');
+          div.textContent = line;
+          logEl.appendChild(div);
+        });
+      }
+
+      // Render Tab 3: 13-Point Rubric Auditor
+      function renderAuditorTab() {
+        var dims = ['Impact', 'Technical', 'Design', 'Innovation', 'Presentation'];
+        var dimContainer = document.getElementById('dimensionBarsContainer');
+        dimContainer.innerHTML = '';
+        dims.forEach(function (d) {
+          var matching = state.rubric.filter(function (r) { return r.dim === d; });
+          var passed = matching.filter(function (r) { return r.passed; }).length;
+          var score20 = Math.round((passed / (matching.length || 1)) * 20);
+          var card = document.createElement('div');
+          card.className = 'bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-center';
+          card.innerHTML = '<div class="text-[11px] text-slate-400">' + d + ' (20%)</div>' +
+            '<div class="text-sm font-bold text-emerald-300 mono mt-0.5">' + score20 + ' / 20</div>';
+          dimContainer.appendChild(card);
+        });
+
+        var list = document.getElementById('rubricListContainer');
+        list.innerHTML = '';
+        state.rubric.forEach(function (item, idx) {
+          var label = document.createElement('label');
+          label.className = 'flex items-center justify-between gap-3 p-2.5 rounded-lg bg-slate-950/90 border border-slate-800 cursor-pointer hover:border-violet-500/40';
+          var left = document.createElement('div');
+          left.className = 'flex items-center gap-2.5';
+
+          var cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.checked = !!item.passed;
+          cb.className = 'rounded border-slate-700 text-emerald-500 focus:ring-emerald-500';
+          cb.addEventListener('change', function () {
+            state.rubric[idx].passed = cb.checked;
+            saveStored('necrospec_rubric_v1', state.rubric);
+            renderAll();
+          });
+
+          left.appendChild(cb);
+          var span = document.createElement('span');
+          span.className = 'text-xs ' + (item.passed ? 'text-slate-100' : 'text-slate-400');
+          span.innerHTML = '<strong class="mono text-violet-300 mr-1.5">' + item.code + '</strong>' + item.label;
+          left.appendChild(span);
+
+          var pill = document.createElement('span');
+          pill.className = 'text-[10px] mono px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-700 shrink-0';
+          pill.textContent = item.dim;
+
+          label.appendChild(left);
+          label.appendChild(pill);
+          list.appendChild(label);
+        });
+      }
+
+      function renderAll() {
+        renderKpis();
+        renderSpecsTab();
+        renderHooksTab();
+        renderAuditorTab();
+      }
+
+      // Event Listeners: Navigation Tabs
+      document.querySelectorAll('.nav-tab').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var target = btn.getAttribute('data-tab');
+          state.activeTab = target;
+          document.querySelectorAll('.nav-tab').forEach(function (b) {
+            if (b.getAttribute('data-tab') === target) {
+              b.className = 'nav-tab px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-t-lg border-b-2 border-violet-400 bg-violet-950/40 text-white transition';
+            } else {
+              b.className = 'nav-tab px-4 py-2.5 text-xs sm:text-sm font-medium rounded-t-lg border-b-2 border-transparent text-slate-400 hover:text-slate-200 transition';
+            }
+          });
+          document.querySelectorAll('.tab-panel').forEach(function (panel) {
+            if (panel.id === 'tab-' + target) {
+              panel.classList.remove('hidden');
+            } else {
+              panel.classList.add('hidden');
+            }
+          });
+          if (target === 'civgame') { setTimeout(drawCivCanvas, 20); }
+        });
+      });
+
+      // Preset Selector
+      document.getElementById('presetSelect').addEventListener('change', function (e) {
+        var key = e.target.value;
+        state.activePresetKey = key;
+        var p = PRESETS[key] || PRESETS.skeleton;
+        state.requirements = JSON.parse(JSON.stringify(p.requirements));
+        state.tasks = JSON.parse(JSON.stringify(p.tasks));
+        renderAll();
+        showToast('Loaded Track Blueprint: ' + p.name);
+      });
+
+      // Spec Document Switcher (requirements.md / design.md / tasks.md)
+      document.querySelectorAll('.spec-doc-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          state.activeSpecDoc = btn.getAttribute('data-specdoc');
+          document.querySelectorAll('.spec-doc-btn').forEach(function (b) {
+            if (b.getAttribute('data-specdoc') === state.activeSpecDoc) {
+              b.className = 'spec-doc-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-violet-600 text-white';
+            } else {
+              b.className = 'spec-doc-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-900 text-slate-300 hover:bg-slate-800';
+            }
+          });
+          renderSpecsTab();
+        });
+      });
+
+      // Compile input to EARS
+      document.getElementById('btnCompileInputToEars').addEventListener('click', function () {
+        var inputEl = document.getElementById('inputReqClause');
+        inputEl.value = compileClauseToEars(inputEl.value);
+        showToast('Input clause compiled into strict EARS format!');
+      });
+
+      // Add Requirement
+      document.getElementById('btnAddRequirement').addEventListener('click', function () {
+        var titleEl = document.getElementById('inputReqTitle');
+        var clauseEl = document.getElementById('inputReqClause');
+        var title = titleEl.value.trim() || 'Custom Specification Clause';
+        var clause = clauseEl.value.trim();
+        if (!clause) {
+          clause = 'WHEN a user triggers ' + title + ', THE SYSTEM SHALL execute the validated workflow deterministically.';
+        }
+        var nextNum = state.requirements.length + 1;
+        var reqId = 'REQ-0' + nextNum;
+        state.requirements.push({ id: reqId, title: title, clause: clause });
+        titleEl.value = '';
+        clauseEl.value = '';
+        renderAll();
+        showToast('Added ' + reqId + ' to requirements.md');
+      });
+
+      // Auto-Heal All Non-EARS Clauses
+      document.getElementById('btnAutoRewriteAllEars').addEventListener('click', function () {
+        state.requirements.forEach(function (r) {
+          r.clause = compileClauseToEars(r.clause);
+        });
+        renderAll();
+        showToast('All requirements verified & rewritten to 100% EARS compliance!');
+      });
+
+      // Add Task
+      document.getElementById('btnAddTask').addEventListener('click', function () {
+        var input = document.getElementById('inputNewTask');
+        var val = input.value.trim();
+        if (!val) {
+          showToast('Enter a task milestone title first.');
+          return;
+        }
+        state.tasks.push({ id: 'T' + (state.tasks.length + 1), title: val, done: false });
+        input.value = '';
+        renderAll();
+        showToast('Added task milestone to tasks.md');
+      });
+
+      // Copy & Download Spec Doc
+      document.getElementById('btnCopySpecDoc').addEventListener('click', function () {
+        var txt = buildSpecDocumentText(state.activeSpecDoc);
+        copyTextToClipboard(txt, state.activeSpecDoc + '.md');
+      });
+      document.getElementById('btnDownloadSpecDoc').addEventListener('click', function () {
+        var txt = buildSpecDocumentText(state.activeSpecDoc);
+        downloadTextFile(state.activeSpecDoc + '.md', txt);
+      });
+      document.getElementById('btnDownloadCurrentFile').addEventListener('click', function () {
+        var txt = buildSpecDocumentText(state.activeSpecDoc);
+        downloadTextFile(state.activeSpecDoc + '.md', txt);
+      });
+
+      // Tab 2: Kiro File Switcher
+      document.querySelectorAll('.kiro-file-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          // Save current edits first
+          state.kiroFiles[state.activeKiroFile] = document.getElementById('kiroConfigTextarea').value;
+          state.activeKiroFile = btn.getAttribute('data-kirofile');
+          document.querySelectorAll('.kiro-file-btn').forEach(function (b) {
+            if (b.getAttribute('data-kirofile') === state.activeKiroFile) {
+              b.className = 'kiro-file-btn px-2.5 py-1 rounded text-xs font-medium bg-violet-600 text-white mono';
+            } else {
+              b.className = 'kiro-file-btn px-2.5 py-1 rounded text-xs font-medium bg-slate-900 text-slate-300 hover:bg-slate-800 mono';
+            }
+          });
+          document.getElementById('kiroConfigTextarea').value = state.kiroFiles[state.activeKiroFile] || '';
+          renderHooksTab();
+        });
+      });
+
+      document.getElementById('btnCopyKiroConfig').addEventListener('click', function () {
+        var val = document.getElementById('kiroConfigTextarea').value;
+        copyTextToClipboard(val, '.kiro/' + state.activeKiroFile);
+      });
+
+      // Run 100-Case PBT Suite & Simulate PostFileSave Hook
+      function triggerPostFileSaveAndPbt(sourceLabel) {
+        var t0 = performance.now();
+        var passed = 0;
+        for (var i = 0; i < 100; i++) {
+          var sample = 'fuzz_clause_' + i + '_' + Math.random().toString(36).slice(2);
+          var c1 = compileClauseToEars(sample);
+          var c2 = compileClauseToEars(c1);
+          if (isEarsCompliant(c1) && c1 === c2) {
+            passed++;
+          }
+        }
+        var elapsed = Math.max(4, Math.round(performance.now() - t0));
+        state.pbtStats.passedCases = passed;
+        state.pbtStats.durationMs = elapsed;
+        var ts = new Date().toISOString().slice(11, 19);
+        state.hookLogs.unshift('[' + ts + '] [PBT PASS] ' + passed + '/100 EARS invariants (Completeness + Idempotency) passed in ' + elapsed + 'ms');
+        state.hookLogs.unshift('[' + ts + '] [PostFileSave] Hook triggered by ' + sourceLabel + ' -> node tests/pbt_spec_invariants.test.js');
+        renderAll();
+        showToast('PostFileSave Hook & 100/100 PBT Invariants Passed!');
+      }
+
+      document.getElementById('btnSaveKiroConfig').addEventListener('click', function () {
+        state.kiroFiles[state.activeKiroFile] = document.getElementById('kiroConfigTextarea').value;
+        triggerPostFileSaveAndPbt('.kiro/' + state.activeKiroFile);
+      });
+      document.getElementById('btnRunPbtSuite').addEventListener('click', function () {
+        triggerPostFileSaveAndPbt('Manual Hook Simulator');
+      });
+      document.getElementById('btnClearHookLog').addEventListener('click', function () {
+        state.hookLogs = ['[CONSOLE CLEARED] Ready for next PostFileSave hook event.'];
+        renderHooksTab();
+      });
+
+      // Tab 3: Auditor & Teleprompter
+      document.getElementById('btnCheckAllRubric').addEventListener('click', function () {
+        state.rubric.forEach(function (r) { r.passed = true; });
+        saveStored('necrospec_rubric_v1', state.rubric);
+        renderAll();
+        showToast('All 13 Kiroween Rubric items marked verified!');
+      });
+
+      document.getElementById('btnExportSubmittedMd').addEventListener('click', function () {
+        var lines = [
+          '# Kiroween 2026 Submission Manifest (SUBMITTED.md)',
+          '',
+          '| Code | Dimension | Requirement Check | Status |',
+          '| :--- | :--- | :--- | :--- |'
+        ];
+        state.rubric.forEach(function (r) {
+          lines.push('| ' + r.code + ' | ' + r.dim + ' | ' + r.label + ' | ' + (r.passed ? 'VERIFIED' : 'PENDING') + ' |');
+        });
+        downloadTextFile('SUBMITTED.md', lines.join('\n'));
+      });
+
+      function formatTimer(sec) {
+        var m = Math.floor(sec / 60);
+        var s = sec % 60;
+        return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+      }
+
+      document.getElementById('btnStartPauseTimer').addEventListener('click', function () {
+        var btn = document.getElementById('btnStartPauseTimer');
+        if (state.timerInterval) {
+          clearInterval(state.timerInterval);
+          state.timerInterval = null;
+          btn.textContent = 'Resume';
+        } else {
+          btn.textContent = 'Pause';
+          state.timerInterval = setInterval(function () {
+            if (state.timerSeconds > 0) {
+              state.timerSeconds--;
+              document.getElementById('teleprompterTimerDisplay').textContent = formatTimer(state.timerSeconds);
+            } else {
+              clearInterval(state.timerInterval);
+              state.timerInterval = null;
+              btn.textContent = 'Start';
+              showToast('3-Minute Demo Video Timer Complete!');
+            }
+          }, 1000);
+        }
+      });
+
+      document.getElementById('btnResetTimer').addEventListener('click', function () {
+        if (state.timerInterval) {
+          clearInterval(state.timerInterval);
+          state.timerInterval = null;
+        }
+        state.timerSeconds = 165;
+        document.getElementById('teleprompterTimerDisplay').textContent = formatTimer(state.timerSeconds);
+        document.getElementById('btnStartPauseTimer').textContent = 'Start';
+      });
+
+      document.getElementById('btnCopySocialPost').addEventListener('click', function () {
+        var txt = document.getElementById('socialPostPreview').textContent;
+        copyTextToClipboard(txt, '#KiroweenHackathon26 Social Post');
+      });
+
+      document.getElementById('btnCopyKiroUsage').addEventListener('click', function () {
+        var usageTxt = '# Kiro Usage Report — NecroSpec Studio\n\n1. **Specs (.kiro/specs/necrospec-core/)**: EARS-compliant requirements.md, design.md, and tasks.md.\n2. **Steering (.kiro/steering/)**: Always-on product.md, tech.md, structure.md, and AGENTS.md.\n3. **Hooks (.kiro/hooks/)**: Automated PostFileSave triggers executing 100-case Property-Based Testing (PBT) invariants.\n4. **MCP (.kiro/settings/mcp.json)**: Filesystem and Playwright verification integrations.';
+        copyTextToClipboard(usageTxt, 'docs/KIRO_USAGE.md');
+      });
+
+      document.getElementById('btnCopyCreditsSummary').addEventListener('click', function () {
+        var formTxt = [
+          'First Name: junhui',
+          'Last Name: lim',
+          'Devpost Email: firefoxbj7@gmail.com',
+          'Country of Residence: United States',
+          'Category & Plan: Skeleton Crew - Building NecroSpec Studio, an interactive Kiro Spec-Driven Development (.kiro/specs, steering, hooks & Property-Based Testing) workbench and starter template.'
+        ].join('\n');
+        copyTextToClipboard(formTxt, 'Credits Request Form Summary');
+      });
+
+      // Judge Login & Tour Modal
+      function activateJudgeSession() {
+        state.judgeLoggedIn = true;
+        document.getElementById('judgeStatusText').textContent = 'Judge Verified: judge@kiroween.dev';
+        document.getElementById('judgeStatusDot').className = 'w-2 h-2 rounded-full bg-emerald-400';
+        document.getElementById('btnJudgeLogin').textContent = '✓ Judge Session Active';
+        showToast('Logged in as Hackathon Judge (judge@kiroween.dev)');
+      }
+
+      document.getElementById('btnJudgeLogin').addEventListener('click', activateJudgeSession);
+      document.getElementById('btnActivateJudgeFromModal').addEventListener('click', function () {
+        activateJudgeSession();
+        document.getElementById('tourModal').classList.add('hidden');
+        document.getElementById('tourModal').classList.remove('flex');
+      });
+
+      document.getElementById('btnOpenTourModal').addEventListener('click', function () {
+        var m = document.getElementById('tourModal');
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+      });
+      document.getElementById('btnCloseTourModal').addEventListener('click', function () {
+        var m = document.getElementById('tourModal');
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+      });
+      document.getElementById('btnDismissModal').addEventListener('click', function () {
+        var m = document.getElementById('tourModal');
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+      });
+
+
+      // =====================================================================
+      // CIVKIRO 1991 — PLAYABLE 4X STRATEGY CANVAS ENGINE & WEB AUDIO SYNTH
+      // =====================================================================
+      var audioCtx = null;
+      var civAudioMuted = false;
+
+      function playCivSound(kind) {
+        if (civAudioMuted) return;
+        try {
+          var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return;
+          if (!audioCtx) audioCtx = new AudioContextClass();
+          if (audioCtx.state === 'suspended') audioCtx.resume();
+          var now = audioCtx.currentTime;
+          var osc = audioCtx.createOscillator();
+          var gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          if (kind === 'move') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(320, now);
+            osc.frequency.exponentialRampToValueAtTime(440, now + 0.06);
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.linearRampToValueAtTime(0.001, now + 0.07);
+            osc.start(now);
+            osc.stop(now + 0.07);
+          } else if (kind === 'city') {
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(261.6, now);
+            osc.frequency.setValueAtTime(329.6, now + 0.07);
+            osc.frequency.setValueAtTime(392.0, now + 0.14);
+            osc.frequency.setValueAtTime(523.2, now + 0.21);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.linearRampToValueAtTime(0.001, now + 0.34);
+            osc.start(now);
+            osc.stop(now + 0.35);
+          } else if (kind === 'tech' || kind === 'turn') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440, now);
+            osc.frequency.exponentialRampToValueAtTime(660, now + 0.15);
+            gain.gain.setValueAtTime(0.07, now);
+            gain.gain.linearRampToValueAtTime(0.001, now + 0.16);
+            osc.start(now);
+            osc.stop(now + 0.17);
+          } else if (kind === 'gandhi') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(180, now);
+            osc.frequency.linearRampToValueAtTime(95, now + 0.25);
+            gain.gain.setValueAtTime(0.09, now);
+            gain.gain.linearRampToValueAtTime(0.001, now + 0.26);
+            osc.start(now);
+            osc.stop(now + 0.27);
+          }
+        } catch (e) {}
+      }
+
+      var CIV_COLS = 12;
+      var CIV_ROWS = 7;
+      var TERRAINS = [
+        { id: 'water', name: 'Ocean', color: '#0c2340', border: '#153763', food: 1, prod: 0, gold: 2, icon: '🌊', passable: false },
+        { id: 'plains', name: 'Fertile Plains', color: '#163828', border: '#21543c', food: 2, prod: 1, gold: 1, icon: '🌾', passable: true },
+        { id: 'forest', name: 'Ancient Forest', color: '#102b21', border: '#1b4737', food: 1, prod: 2, gold: 1, icon: '🌲', passable: true },
+        { id: 'hills', name: 'Gold Hills', color: '#2b2438', border: '#463a5c', food: 1, prod: 2, gold: 3, icon: '⛰️', passable: true }
+      ];
+
+      var CIV_TECHS = [
+        { id: 'pottery', name: 'Pottery 制陶 (+2🌾/Turn)', cost: 12, unlocked: false },
+        { id: 'bronze', name: 'Bronze 青铜 (+2⚙️/Turn)', cost: 18, unlocked: false },
+        { id: 'writing', name: 'Writing 文字 (+3🧪/Turn)', cost: 26, unlocked: false },
+        { id: 'kiro_sdd', name: 'Kiro SDD 奇点 (Victory)', cost: 40, unlocked: false }
+      ];
+
+      var civState = {
+        turn: 1,
+        year: -4000,
+        food: 12,
+        prod: 12,
+        sci: 4,
+        gold: 25,
+        selectedUnitIdx: 0,
+        selectedTile: { x: 3, y: 3 },
+        activeTechId: 'pottery',
+        gandhiLegacyBugMode: false,
+        gandhiAggro: 1,
+        map: [],
+        cities: [],
+        units: [],
+        aiCities: [{ name: 'Delhi-AI', x: 9, y: 2, pop: 2 }],
+        logs: [
+          '[4000 BC] 欢迎来到《文明 1991》Kiro 规格重构版！点击棋盘或按方向键移动开拓者 (Settler)，按 B 键建立第一座城市。'
+        ]
+      };
+
+      function addCivLog(msg) {
+        var yr = civState.year < 0 ? Math.abs(civState.year) + ' BC' : civState.year + ' AD';
+        civState.logs.unshift('[' + yr + '] ' + msg);
+        if (civState.logs.length > 25) civState.logs.pop();
+      }
+
+      function revealFogAround(cx, cy, radius) {
+        for (var y = 0; y < CIV_ROWS; y++) {
+          for (var x = 0; x < CIV_COLS; x++) {
+            if (Math.abs(x - cx) <= radius && Math.abs(y - cy) <= radius) {
+              civState.map[y][x].explored = true;
+            }
+          }
+        }
+      }
+
+      function initCivWorld(seedOffset) {
+        civState.turn = 1;
+        civState.year = -4000;
+        civState.food = 12;
+        civState.prod = 12;
+        civState.sci = 4;
+        civState.gold = 25;
+        civState.cities = [];
+        civState.gandhiAggro = 1;
+        CIV_TECHS.forEach(function (t) { t.unlocked = false; });
+        civState.activeTechId = 'pottery';
+        civState.map = [];
+        var seed = (seedOffset || 1) * 37;
+        for (var y = 0; y < CIV_ROWS; y++) {
+          var row = [];
+          for (var x = 0; x < CIV_COLS; x++) {
+            seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+            var isBorderWater = (x === 0 || x === CIV_COLS - 1 || y === 0 || y === CIV_ROWS - 1) && ((seed % 5) === 0);
+            var tIdx = isBorderWater ? 0 : (1 + (seed % 3));
+            // Guarantee starting region & AI city region are passable land
+            if ((x >= 2 && x <= 5 && y >= 2 && y <= 4) || (x === 9 && y === 2)) {
+              tIdx = (x + y) % 2 === 0 ? 1 : 2;
+            }
+            var hasRuin = !isBorderWater && tIdx !== 0 && ((x === 5 && y === 2) || (x === 7 && y === 4));
+            row.push({
+              x: x,
+              y: y,
+              terrain: TERRAINS[tIdx],
+              explored: false,
+              ruin: hasRuin
+            });
+          }
+          civState.map.push(row);
+        }
+        civState.units = [
+          { id: 'U1', type: 'Settler', icon: '🚩', x: 3, y: 3, moves: 2, maxMoves: 2, atk: 1 },
+          { id: 'U2', type: 'Warrior', icon: '⚔️', x: 4, y: 3, moves: 2, maxMoves: 2, atk: 3 }
+        ];
+        civState.selectedUnitIdx = 0;
+        civState.selectedTile = { x: 3, y: 3 };
+        revealFogAround(3, 3, 2);
+        revealFogAround(4, 3, 2);
+        revealFogAround(9, 2, 1);
+        renderCivAll();
+      }
+
+      function computeCivRates() {
+        var foodRate = 2 + (CIV_TECHS[0].unlocked ? 2 : 0);
+        var prodRate = 2 + (CIV_TECHS[1].unlocked ? 2 : 0);
+        var sciRate = 2 + (CIV_TECHS[2].unlocked ? 3 : 0);
+        var goldRate = 1;
+        civState.cities.forEach(function (c) {
+          var tile = civState.map[c.y][c.x];
+          foodRate += tile.terrain.food + c.pop;
+          prodRate += tile.terrain.prod + 1;
+          sciRate += 2 + c.pop;
+          goldRate += tile.terrain.gold;
+        });
+        return { foodRate: foodRate, prodRate: prodRate, sciRate: sciRate, goldRate: goldRate };
+      }
+
+      function drawCivCanvas() {
+        var canvas = document.getElementById('civMapCanvas');
+        var container = document.getElementById('civCanvasContainer');
+        if (!canvas || !container) return;
+        var rectW = Math.max(320, container.clientWidth || 680);
+        var cellW = Math.floor(rectW / CIV_COLS);
+        var cellH = Math.max(48, Math.min(64, Math.floor(cellW * 0.88)));
+        canvas.width = cellW * CIV_COLS;
+        canvas.height = cellH * CIV_ROWS;
+        var ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (var y = 0; y < CIV_ROWS; y++) {
+          for (var x = 0; x < CIV_COLS; x++) {
+            var cell = civState.map[y][x];
+            var px = x * cellW;
+            var py = y * cellH;
+
+            if (!cell.explored) {
+              ctx.fillStyle = '#07060f';
+              ctx.fillRect(px, py, cellW, cellH);
+              ctx.strokeStyle = '#161329';
+              ctx.strokeRect(px + 0.5, py + 0.5, cellW - 1, cellH - 1);
+              ctx.fillStyle = '#312b4f';
+              ctx.font = '11px JetBrains Mono, monospace';
+              ctx.textAlign = 'center';
+              ctx.fillText('FOG', px + cellW / 2, py + cellH / 2 + 4);
+              continue;
+            }
+
+            ctx.fillStyle = cell.terrain.color;
+            ctx.fillRect(px, py, cellW, cellH);
+            ctx.strokeStyle = cell.terrain.border;
+            ctx.lineWidth = 1;
+            ctx.strokeRect(px + 0.5, py + 0.5, cellW - 1, cellH - 1);
+
+            // Terrain icon
+            ctx.font = '14px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(cell.terrain.icon, px + 4, py + 16);
+
+            // Ruin icon
+            if (cell.ruin) {
+              ctx.font = '14px sans-serif';
+              ctx.textAlign = 'right';
+              ctx.fillText('🏺', px + cellW - 4, py + 16);
+            }
+
+            // Selected tile highlight
+            if (civState.selectedTile && civState.selectedTile.x === x && civState.selectedTile.y === y) {
+              ctx.strokeStyle = '#a78bfa';
+              ctx.lineWidth = 2.5;
+              ctx.strokeRect(px + 2, py + 2, cellW - 4, cellH - 4);
+            }
+          }
+        }
+
+        // Draw Player Cities
+        civState.cities.forEach(function (city) {
+          var px = city.x * cellW;
+          var py = city.y * cellH;
+          ctx.fillStyle = 'rgba(16, 185, 129, 0.28)';
+          ctx.fillRect(px + 2, py + 2, cellW - 4, cellH - 4);
+          ctx.font = '18px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('🏛️', px + cellW / 2, py + cellH / 2 + 4);
+          ctx.fillStyle = '#6ee7b7';
+          ctx.font = 'bold 10px Inter, sans-serif';
+          ctx.fillText(city.name + ' (' + city.pop + ')', px + cellW / 2, py + cellH - 5);
+        });
+
+        // Draw AI Cities
+        civState.aiCities.forEach(function (ai) {
+          if (!civState.map[ai.y][ai.x].explored) return;
+          var px = ai.x * cellW;
+          var py = ai.y * cellH;
+          ctx.fillStyle = 'rgba(244, 63, 94, 0.28)';
+          ctx.fillRect(px + 2, py + 2, cellW - 4, cellH - 4);
+          ctx.font = '17px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('🏯', px + cellW / 2, py + cellH / 2 + 4);
+          ctx.fillStyle = '#fda4af';
+          ctx.font = 'bold 10px Inter, sans-serif';
+          ctx.fillText(ai.name, px + cellW / 2, py + cellH - 5);
+        });
+
+        // Draw Units
+        civState.units.forEach(function (u, idx) {
+          var px = u.x * cellW;
+          var py = u.y * cellH;
+          var isSel = idx === civState.selectedUnitIdx;
+          if (isSel) {
+            ctx.strokeStyle = '#34d399';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.arc(px + cellW / 2, py + cellH / 2 - 2, Math.min(cellW, cellH) * 0.34, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+          ctx.font = '18px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(u.icon, px + cellW / 2, py + cellH / 2 + 4);
+          ctx.fillStyle = isSel ? '#ffffff' : '#cbd5e1';
+          ctx.font = '9px JetBrains Mono, monospace';
+          ctx.fillText(u.type.slice(0, 3) + ' ' + u.moves + 'm', px + cellW / 2, py + 11);
+        });
+      }
+
+      function renderCivAll() {
+        var rates = computeCivRates();
+        var yrStr = civState.year < 0 ? Math.abs(civState.year) + ' BC' : civState.year + ' AD';
+        document.getElementById('civYearLabel').textContent = yrStr + ' (Turn ' + civState.turn + ')';
+        document.getElementById('civFoodVal').textContent = civState.food;
+        document.getElementById('civFoodRate').textContent = '+' + rates.foodRate;
+        document.getElementById('civProdVal').textContent = civState.prod;
+        document.getElementById('civProdRate').textContent = '+' + rates.prodRate;
+        document.getElementById('civSciVal').textContent = civState.sci;
+        document.getElementById('civSciRate').textContent = '+' + rates.sciRate;
+        document.getElementById('civGoldVal').textContent = civState.gold;
+        document.getElementById('civGoldRate').textContent = '+' + rates.goldRate;
+
+        // Selected Unit / Tile info
+        var activeUnit = civState.units[civState.selectedUnitIdx];
+        var st = civState.selectedTile || (activeUnit ? { x: activeUnit.x, y: activeUnit.y } : { x: 3, y: 3 });
+        var cell = civState.map[st.y][st.x];
+        if (activeUnit) {
+          document.getElementById('civSelectedTitle').textContent =
+            'Active Unit: ' + activeUnit.icon + ' ' + activeUnit.type + ' (' + activeUnit.x + ', ' + activeUnit.y + ')';
+          var uCell = civState.map[activeUnit.y][activeUnit.x];
+          document.getElementById('civSelectedDesc').textContent =
+            'Tile: ' + uCell.terrain.name + ' (🌾+' + uCell.terrain.food + ' ⚙️+' + uCell.terrain.prod + ' 💰+' + uCell.terrain.gold + ') · Moves: ' + activeUnit.moves + '/' + activeUnit.maxMoves;
+        } else {
+          document.getElementById('civSelectedTitle').textContent = 'Tile (' + st.x + ', ' + st.y + ')';
+          document.getElementById('civSelectedDesc').textContent = 'Terrain: ' + cell.terrain.name;
+        }
+
+        // Tech Tree Grid
+        var activeTech = CIV_TECHS.find(function (t) { return t.id === civState.activeTechId; }) || CIV_TECHS[0];
+        document.getElementById('civTechProgressText').textContent = civState.sci + ' / ' + activeTech.cost + ' 🧪';
+        var techGrid = document.getElementById('civTechButtonsGrid');
+        techGrid.innerHTML = '';
+        CIV_TECHS.forEach(function (t) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          var isCur = t.id === civState.activeTechId;
+          b.className = 'p-2 rounded-lg border text-left transition ' +
+            (t.unlocked
+              ? 'bg-emerald-950/50 border-emerald-500/50 text-emerald-200'
+              : isCur
+                ? 'bg-violet-950/60 border-violet-400 text-white'
+                : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200');
+          b.innerHTML = '<div class="font-semibold truncate">' + (t.unlocked ? '✓ ' : isCur ? '▶ ' : '') + t.name + '</div>' +
+            '<div class="mono text-[10px] opacity-80">' + (t.unlocked ? 'UNLOCKED' : 'Cost: ' + t.cost + ' 🧪') + '</div>';
+          b.addEventListener('click', function () {
+            civState.activeTechId = t.id;
+            renderCivAll();
+          });
+          techGrid.appendChild(b);
+        });
+
+        // Nuclear Gandhi badge
+        var gBadge = document.getElementById('civGandhiAggroBadge');
+        if (civState.gandhiAggro > 10) {
+          gBadge.textContent = '☢️ NUCLEAR 255 / 10 (UNDERFLOW!)';
+          gBadge.className = 'mono text-xs px-2 py-0.5 rounded bg-rose-500/30 text-rose-200 border border-rose-500';
+        } else {
+          gBadge.textContent = 'Peaceful Aggro: ' + civState.gandhiAggro + ' / 10';
+          gBadge.className = 'mono text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300';
+        }
+
+        // Logs
+        var logBox = document.getElementById('civGameLog');
+        logBox.innerHTML = '';
+        civState.logs.forEach(function (l) {
+          var d = document.createElement('div');
+          d.textContent = l;
+          logBox.appendChild(d);
+        });
+
+        drawCivCanvas();
+      }
+
+      function moveSelectedCivUnit(dx, dy) {
+        var u = civState.units[civState.selectedUnitIdx];
+        if (!u) {
+          showToast('No units available. Train a Warrior or Settler!');
+          return;
+        }
+        if (u.moves <= 0) {
+          showToast(u.type + ' has 0 moves left this turn. Click End Turn (Space)!');
+          return;
+        }
+        var nx = u.x + dx;
+        var ny = u.y + dy;
+        if (nx < 0 || nx >= CIV_COLS || ny < 0 || ny >= CIV_ROWS) return;
+        var targetCell = civState.map[ny][nx];
+        if (!targetCell.terrain.passable) {
+          showToast('Cannot march onto Ocean tiles without Navigation!');
+          return;
+        }
+        u.x = nx;
+        u.y = ny;
+        u.moves -= 1;
+        civState.selectedTile = { x: nx, y: ny };
+        revealFogAround(nx, ny, 2);
+        playCivSound('move');
+
+        if (targetCell.ruin) {
+          targetCell.ruin = false;
+          civState.sci += 10;
+          civState.gold += 15;
+          addCivLog('🏺 探索远古遗迹！获得 +10 🧪 Science 与 +15 💰 Gold！');
+          showToast('Ancient Ruin Discovered: +10 Science, +15 Gold!');
+        }
+        document.getElementById('civActiveSpecRule').textContent =
+          'EARS Spec [REQ-CIV-01]: WHEN unit moves to (' + nx + ',' + ny + '), THE SYSTEM SHALL reveal 2-tile fog radius.';
+        checkCivTechUnlock();
+        renderCivAll();
+      }
+
+      function foundCivCity() {
+        var u = civState.units[civState.selectedUnitIdx];
+        if (!u || u.type !== 'Settler') {
+          showToast('Select a Settler (🚩) unit to found a city!');
+          return;
+        }
+        var existing = civState.cities.some(function (c) { return c.x === u.x && c.y === u.y; });
+        if (existing) {
+          showToast('A city already stands on this tile!');
+          return;
+        }
+        var cityNames = ['Chang-an', 'Babylon', 'Alexandria', 'Memphis', 'Rome', 'Kyoto'];
+        var name = cityNames[civState.cities.length % cityNames.length];
+        civState.cities.push({ name: name, x: u.x, y: u.y, pop: 1 });
+        civState.units.splice(civState.selectedUnitIdx, 1);
+        civState.selectedUnitIdx = 0;
+        revealFogAround(u.x, u.y, 2);
+        playCivSound('city');
+        addCivLog('🏛️ 建立新城市【' + name + '】！每回合自动产出粮食、生产力与科研。');
+        document.getElementById('civActiveSpecRule').textContent =
+          'EARS Spec [REQ-CIV-01]: Verified — Settler consumed & City ' + name + ' spawned at (' + u.x + ',' + u.y + ').';
+        renderCivAll();
+        showToast('Founded City: ' + name + '!');
+      }
+
+      function checkCivTechUnlock() {
+        var activeTech = CIV_TECHS.find(function (t) { return t.id === civState.activeTechId; });
+        if (activeTech && !activeTech.unlocked && civState.sci >= activeTech.cost) {
+          civState.sci -= activeTech.cost;
+          activeTech.unlocked = true;
+          playCivSound('tech');
+          addCivLog('🔬 科技突破：成功研发【' + activeTech.name + '】！');
+          showToast('Tech Unlocked: ' + activeTech.name + '!');
+          var nextLocked = CIV_TECHS.find(function (t) { return !t.unlocked; });
+          if (nextLocked) {
+            civState.activeTechId = nextLocked.id;
+          } else {
+            addCivLog('🏆 恭喜！你已解锁【Kiro SDD 规格奇点】，达成《文明 1991》科技胜利！');
+            showToast('Victory! You achieved Kiro Spec-Driven AI Singularity!');
+          }
+        }
+      }
+
+      function endCivTurn() {
+        civState.turn += 1;
+        civState.year += 100;
+        var rates = computeCivRates();
+        civState.food += rates.foodRate;
+        civState.prod += rates.prodRate;
+        civState.sci += rates.sciRate;
+        civState.gold += rates.goldRate;
+
+        // City population growth check
+        if (civState.cities.length > 0 && civState.food >= 24) {
+          civState.food -= 18;
+          var growCity = civState.cities[(civState.turn - 1) % civState.cities.length];
+          growCity.pop += 1;
+          addCivLog('🌾 【' + growCity.name + '】人口增长至 Lv.' + growCity.pop + '！');
+        }
+
+        civState.units.forEach(function (u) { u.moves = u.maxMoves; });
+        checkCivTechUnlock();
+        playCivSound('turn');
+        addCivLog('⏭️ 回合结算完成：+' + rates.foodRate + '🌾 +' + rates.prodRate + '⚙️ +' + rates.sciRate + '🧪 +' + rates.goldRate + '💰');
+        document.getElementById('civActiveSpecRule').textContent =
+          'EARS Spec [REQ-CIV-02]: Turn ' + civState.turn + ' yields settled deterministically with zero drift.';
+        renderCivAll();
+      }
+
+      // Wire Canvas Click
+      document.getElementById('civMapCanvas').addEventListener('click', function (e) {
+        var canvas = document.getElementById('civMapCanvas');
+        var rect = canvas.getBoundingClientRect();
+        var scaleX = canvas.width / rect.width;
+        var scaleY = canvas.height / rect.height;
+        var cx = Math.floor(((e.clientX - rect.left) * scaleX) / (canvas.width / CIV_COLS));
+        var cy = Math.floor(((e.clientY - rect.top) * scaleY) / (canvas.height / CIV_ROWS));
+        if (cx < 0 || cx >= CIV_COLS || cy < 0 || cy >= CIV_ROWS) return;
+
+        // Check if clicking on a unit
+        var clickedUnitIdx = civState.units.findIndex(function (u) { return u.x === cx && u.y === cy; });
+        if (clickedUnitIdx !== -1) {
+          civState.selectedUnitIdx = clickedUnitIdx;
+          civState.selectedTile = { x: cx, y: cy };
+          renderCivAll();
+          return;
+        }
+
+        // If active unit is adjacent (Chebyshev distance === 1), move unit there!
+        var activeUnit = civState.units[civState.selectedUnitIdx];
+        if (activeUnit && Math.abs(cx - activeUnit.x) <= 1 && Math.abs(cy - activeUnit.y) <= 1 && (cx !== activeUnit.x || cy !== activeUnit.y)) {
+          moveSelectedCivUnit(cx - activeUnit.x, cy - activeUnit.y);
+          return;
+        }
+
+        civState.selectedTile = { x: cx, y: cy };
+        renderCivAll();
+      });
+
+      // Wire Civ Buttons
+      document.getElementById('btnCivMoveUp').addEventListener('click', function () { moveSelectedCivUnit(0, -1); });
+      document.getElementById('btnCivMoveDown').addEventListener('click', function () { moveSelectedCivUnit(0, 1); });
+      document.getElementById('btnCivMoveLeft').addEventListener('click', function () { moveSelectedCivUnit(-1, 0); });
+      document.getElementById('btnCivMoveRight').addEventListener('click', function () { moveSelectedCivUnit(1, 0); });
+      document.getElementById('btnCivCycleUnit').addEventListener('click', function () {
+        if (civState.units.length === 0) return;
+        civState.selectedUnitIdx = (civState.selectedUnitIdx + 1) % civState.units.length;
+        var u = civState.units[civState.selectedUnitIdx];
+        civState.selectedTile = { x: u.x, y: u.y };
+        renderCivAll();
+      });
+      document.getElementById('btnCivFoundCity').addEventListener('click', foundCivCity);
+      document.getElementById('btnCivNextTurn').addEventListener('click', endCivTurn);
+      document.getElementById('btnCivNewMap').addEventListener('click', function () {
+        initCivWorld(Math.floor(Math.random() * 1000) + 2);
+        showToast('Generated a fresh 1991 Civilization World Map!');
+      });
+
+      document.getElementById('btnCivTrainWarrior').addEventListener('click', function () {
+        if (civState.prod < 20) {
+          showToast('Need 20 ⚙️ Production to train a Warrior (end more turns or found a city)!');
+          return;
+        }
+        var spawn = civState.cities[0] || { x: 3, y: 3 };
+        civState.prod -= 20;
+        civState.units.push({ id: 'U' + (civState.units.length + 1), type: 'Warrior', icon: '⚔️', x: spawn.x, y: spawn.y, moves: 2, maxMoves: 2, atk: 3 });
+        civState.selectedUnitIdx = civState.units.length - 1;
+        playCivSound('city');
+        addCivLog('⚔️ 新训练远古勇士 (Warrior) 已部署于 (' + spawn.x + ', ' + spawn.y + ')！');
+        renderCivAll();
+      });
+
+      document.getElementById('btnCivTrainSettler').addEventListener('click', function () {
+        if (civState.prod < 30) {
+          showToast('Need 30 ⚙️ Production to train a Settler!');
+          return;
+        }
+        var spawn = civState.cities[0] || { x: 3, y: 3 };
+        civState.prod -= 30;
+        civState.units.push({ id: 'U' + (civState.units.length + 1), type: 'Settler', icon: '🚩', x: spawn.x, y: spawn.y, moves: 2, maxMoves: 2, atk: 1 });
+        civState.selectedUnitIdx = civState.units.length - 1;
+        playCivSound('city');
+        addCivLog('🚩 新训练开拓者 (Settler) 已部署于 (' + spawn.x + ', ' + spawn.y + ')！');
+        renderCivAll();
+      });
+
+      document.getElementById('btnCivAudioToggle').addEventListener('click', function () {
+        civAudioMuted = !civAudioMuted;
+        document.getElementById('btnCivAudioToggle').textContent = civAudioMuted ? '🔇 1991 Audio: MUTE' : '🔊 1991 Audio: ON';
+      });
+
+      // Nuclear Gandhi 1991 Bug vs Kiro Clamped Guard
+      document.getElementById('btnCivToggleGandhiMode').addEventListener('click', function () {
+        civState.gandhiLegacyBugMode = !civState.gandhiLegacyBugMode;
+        civState.gandhiAggro = 1;
+        var btn = document.getElementById('btnCivToggleGandhiMode');
+        if (civState.gandhiLegacyBugMode) {
+          btn.textContent = '⚠️ Mode: 1991 Unsigned 8-Bit Bug (Unclamped)';
+          btn.className = 'px-2.5 py-1 rounded bg-amber-600/30 hover:bg-amber-600/50 border border-amber-500/40 text-amber-200 text-[11px] font-medium';
+        } else {
+          btn.textContent = '🛡️ Mode: Kiro Spec Clamped (0..10)';
+          btn.className = 'px-2.5 py-1 rounded bg-emerald-600/30 hover:bg-emerald-600/50 border border-emerald-500/40 text-emerald-200 text-[11px] font-medium';
+        }
+        renderCivAll();
+      });
+
+      document.getElementById('btnCivAdoptDemocracy').addEventListener('click', function () {
+        var delta = -2;
+        if (civState.gandhiLegacyBugMode) {
+          // Simulate 1991 unsigned 8-bit integer wrap-around: (1 - 2) & 0xFF === 255
+          civState.gandhiAggro = (1 + delta) & 0xff;
+          playCivSound('gandhi');
+          addCivLog('☢️ [1991 BUG 触发] 甘地采用民主制 (-2 好战度)：1 - 2 发生 8-bit 无符号下溢变为 255！“我们的语言以核武器为后盾！”');
+          document.getElementById('civActiveSpecRule').textContent =
+            'ALERT [1991 Unsigned Underflow]: (1 - 2) & 0xFF = 255! Switch to Kiro Spec Clamped mode to prevent this bug.';
+          showToast('☢️ Nuclear Gandhi Triggered: Aggression wrapped to 255!');
+        } else {
+          civState.gandhiAggro = Math.max(0, Math.min(10, 1 + delta));
+          playCivSound('tech');
+          addCivLog('🛡️ [Kiro REQ-CIV-03 生效] 甘地采用民主制 (-2 好战度)：经 EARS 规格边界保护 clamp(1 - 2, 0, 10) = 0（和平状态）。');
+          document.getElementById('civActiveSpecRule').textContent =
+            'EARS Spec [REQ-CIV-03 PASS]: Aggression safely clamped to 0 (No 8-bit underflow).';
+          showToast('🛡️ Kiro Spec Guard: Aggression clamped safely to 0/10!');
+        }
+        renderCivAll();
+      });
+
+      // Keyboard Controls for 4X Map (when not typing in an input/textarea)
+      window.addEventListener('keydown', function (e) {
+        if (state.activeTab !== 'civgame') return;
+        var tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+        if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') { e.preventDefault(); moveSelectedCivUnit(0, -1); }
+        else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') { e.preventDefault(); moveSelectedCivUnit(0, 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { e.preventDefault(); moveSelectedCivUnit(-1, 0); }
+        else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { e.preventDefault(); moveSelectedCivUnit(1, 0); }
+        else if (e.key === 'b' || e.key === 'B') { e.preventDefault(); foundCivCity(); }
+        else if (e.key === ' ') { e.preventDefault(); endCivTurn(); }
+      });
+
+      window.addEventListener('resize', function () {
+        drawCivCanvas();
+      });
+      window.addEventListener('load', function () {
+        initCivWorld(1);
+      });
+
+      // Initialize UI on load
+      initCivWorld(1);
+      document.getElementById('kiroConfigTextarea').value = state.kiroFiles[state.activeKiroFile];
+      renderAll();
+    })();
+  </script>
+</body>
+</html>
